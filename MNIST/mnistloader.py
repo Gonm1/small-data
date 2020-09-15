@@ -1,3 +1,5 @@
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' # ignore tf warnings about cuda
 from keras.utils import np_utils
 import numpy as np
 import random
@@ -21,7 +23,10 @@ def load_full_mnist(prefix):
 
 
 def load_mnist(items_per_class=10, seed=0):
-    "Recives the number of items per class and returns randomly picked train dataset with it's respective labels one hot encoded. Test set is full test set from MNIST dataset."
+    '''
+    Randomly picks
+
+    '''
 
     # Data loading
     training_images, training_labels = load_full_mnist(

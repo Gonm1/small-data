@@ -1,3 +1,5 @@
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' # ignore tf warnings about cuda
 from tensorflow.python.keras import backend as K
 from keras.utils import np_utils
 import numpy as np
@@ -5,7 +7,7 @@ import random
 import pickle
 import sys
 import cv2
-import os
+
 
 # Functions from keras to load the dataset.
 # https://github.com/tensorflow/tensorflow/blob/v2.2.0/tensorflow/python/keras/datasets/cifar10.py
@@ -80,7 +82,6 @@ def load_full_cifar():
 
 def load_cifar(items_per_class=10, seed=0):
     training_images, training_labels, x_test, y_test = load_full_cifar()
-    print(int(training_labels[0]))
 
     x_train, y_train, indexed = [], [], []
     class_counter = np.zeros(10)
