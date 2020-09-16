@@ -11,12 +11,12 @@ class_names = {"21": "fire lily", "3": "canterbury bells", "45": "bolero deep bl
 
 def load_flowers(img_size=100):
     # Load images into python numpy arrays
-    setid = loadmat('../Datasets/StanfordFlowers102/setid.mat')
+    setid = loadmat('Dataset/setid.mat')
 
     trainingID = setid['trnid'][0]
     testID = setid['tstid'][0]
 
-    image_list = os.listdir('../Datasets/StanfordFlowers102/jpg/')
+    image_list = os.listdir('Dataset/jpg/')
 
     x_train = np.zeros((len(trainingID), img_size, img_size, 3))
     x_test = np.zeros((len(testID), img_size, img_size, 3))
@@ -25,16 +25,16 @@ def load_flowers(img_size=100):
         for img in image_list:
             if str(id).zfill(4) in img:
                 x_train[index] = cv2.resize((cv2.imread(
-                    f'../Datasets/StanfordFlowers102/jpg/{img}', cv2.IMREAD_UNCHANGED)), (img_size, img_size), interpolation=cv2.INTER_AREA)
+                    f'Dataset/jpg/{img}', cv2.IMREAD_UNCHANGED)), (img_size, img_size), interpolation=cv2.INTER_AREA)
 
     for index, id in enumerate(testID):
         for img in image_list:
             if str(id).zfill(4) in img:
                 x_test[index] = cv2.resize((cv2.imread(
-                    f'../Datasets/StanfordFlowers102/jpg/{img}', cv2.IMREAD_UNCHANGED)), (img_size, img_size), interpolation=cv2.INTER_AREA)
+                    f'Dataset/jpg/{img}', cv2.IMREAD_UNCHANGED)), (img_size, img_size), interpolation=cv2.INTER_AREA)
 
     # Load image labels
-    annots = loadmat('../Datasets/StanfordFlowers102/imagelabels.mat')
+    annots = loadmat('Dataset/imagelabels.mat')
     labels = annots['labels'][0]
 
     y_train = np.zeros(len(trainingID), dtype=int)

@@ -30,8 +30,8 @@ def load_mnist(items_per_class=10, seed=0):
 
     # Data loading
     training_images, training_labels = load_full_mnist(
-        "../Datasets/MNIST/train")
-    x_test, y_test = load_full_mnist("../Datasets/MNIST/t10k")
+        "Dataset/train")
+    x_test, y_test = load_full_mnist("Dataset/t10k")
 
     # Make subset for training by picking random examples for each class
     x_train, y_train, indexed = [], [], []

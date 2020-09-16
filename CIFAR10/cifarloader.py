@@ -53,7 +53,7 @@ def load_full_cifar():
         **y_train, y_test**: uint8 arrays of category labels
           (integers in range 0-9) each with shape (num_samples, 1).
     """
-    path = "../Datasets/CIFAR10"
+    path = "Dataset/"
     num_train_samples = 50000
 
     x_train = np.empty((num_train_samples, 3, 32, 32), dtype='uint8')
