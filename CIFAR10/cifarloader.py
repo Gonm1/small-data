@@ -8,11 +8,6 @@ import pickle
 import sys
 import cv2
 
-
-# Functions from keras to load the dataset.
-# https://github.com/tensorflow/tensorflow/blob/v2.2.0/tensorflow/python/keras/datasets/cifar10.py
-
-
 def load_batch(fpath, label_key='labels'):
     """Internal utility for parsing CIFAR data.
     Arguments:
@@ -21,6 +16,8 @@ def load_batch(fpath, label_key='labels'):
             dictionary.
     Returns:
         A tuple `(data, labels)`.
+    Function from keras to load the dataset.
+    https://github.com/tensorflow/tensorflow/blob/v2.2.0/tensorflow/python/keras/datasets/cifar10.py
     """
     with open(fpath, 'rb') as f:
         if sys.version_info < (3,):
@@ -52,6 +49,9 @@ def load_full_cifar():
           is 'channels_last'.
         **y_train, y_test**: uint8 arrays of category labels
           (integers in range 0-9) each with shape (num_samples, 1).
+
+    Function from keras to load the dataset.
+    https://github.com/tensorflow/tensorflow/blob/v2.2.0/tensorflow/python/keras/datasets/cifar10.py
     """
     path = "Dataset/"
     num_train_samples = 50000
@@ -81,6 +81,9 @@ def load_full_cifar():
 
 
 def load_cifar(items_per_class=10, seed=0):
+    '''
+    Randomly picks "items_per_class" items from each class to form the training set.
+    '''
     training_images, training_labels, x_test, y_test = load_full_cifar()
 
     x_train, y_train, indexed = [], [], []
@@ -105,7 +108,10 @@ def load_cifar(items_per_class=10, seed=0):
 
 
 def cifar_preprocess(x_train, y_train, x_test, y_test):
-
+    '''
+    - Convert images from x_train and x_test into minmax normalized images.
+    - Convert y_train and y_test targets into one hot encoded arrays.
+    '''
     # Pre-processing
     x_train_grayscale = np.zeros(x_train.shape[:-1])
     for i in range(x_train.shape[0]):

@@ -24,8 +24,7 @@ def load_full_mnist(prefix):
 
 def load_mnist(items_per_class=10, seed=0):
     '''
-    Randomly picks
-
+    Randomly picks "items_per_class" items from each class to form the training set.
     '''
 
     # Data loading
