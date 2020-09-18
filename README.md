@@ -6,7 +6,11 @@ To create the virtual environment run:
 ```
 virtualenv venv
 ```
-then activate it and run
+then activate it:
+```
+source venv/bin/activate
+```
+and run:
 ```
 pip3 install -r requirements.txt
 ```
