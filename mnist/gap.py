@@ -1,6 +1,6 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' # ignore tf warnings about cuda
-from keras.layers import Conv2D, MaxPooling2D, Dropout, Dense, Flatten
+from keras.layers import Conv2D, MaxPooling2D, Dropout, Dense, Flatten, GlobalAveragePooling2D
 from keras.metrics import Precision, Recall, CategoricalAccuracy
 from keras.losses import CategoricalCrossentropy
 from keras.models import Sequential
@@ -17,20 +17,24 @@ def F1Measure(y_true, y_pred): #taken from old keras source code
     f1_val = 2*(precision*recall)/(precision+recall+K.epsilon())
     return f1_val
 
-def dnn(x_train, y_train, x_test, y_test, ep, bs, verb=0):
+def gap(x_train, y_train, x_test, y_test, ep, bs, verb=0):
     num_classes = y_test.shape[1]
     # build model
     model = Sequential()
     model.add(Conv2D(filters=64, kernel_size=(7,7), input_shape=(28, 28, 1), activation='relu', padding='same'))
-    model.add(MaxPooling2D(pool_size=(4,4)))
+    model.add(GlobalAveragePooling2D(data_format='channels_last'))
     model.add(Conv2D(filters=128, kernel_size=(5,5), activation='relu', padding='same'))
+    model.add(GlobalAveragePooling2D(data_format='channels_last'))
     model.add(Conv2D(filters=64, kernel_size=(5,5), activation='relu', padding='same'))
+    model.add(GlobalAveragePooling2D(data_format='channels_last'))
     model.add(Conv2D(filters=64, kernel_size=(5,5), activation='relu', padding='same'))
+    model.add(GlobalAveragePooling2D(data_format='channels_last'))
     model.add(Conv2D(filters=32, kernel_size=(7,7), activation='relu', padding='same'))
+    model.add(GlobalAveragePooling2D(data_format='channels_last'))
     model.add(Conv2D(filters=128, kernel_size=(5,5), activation='relu', padding='same'))
     model.add(Flatten())
-    model.add(Dense(32, activation='relu'))
-    model.add(Dense(32, activation='relu'))
+    model.add(Dense(128, activation='relu'))
+    model.add(Dense(64, activation='relu'))
     model.add(Dense(num_classes, activation='softmax'))
 
     model.compile(loss=CategoricalCrossentropy(), optimizer=Adam(lr=0.001), metrics=[CategoricalAccuracy(), Precision(), Recall(), F1Measure])
@@ -48,7 +52,7 @@ if __name__ == "__main__":
     import tensorflow as tf
     import numpy as np
     import random
-
+    
     seed_value = 0
     # 1. Set the `PYTHONHASHSEED` environment variable at a fixed value
     os.environ['PYTHONHASHSEED']=str(seed_value)
@@ -70,7 +74,7 @@ if __name__ == "__main__":
     print(f"Training set size: {len(x_train)}")
     print(f"Test set size: {len(x_test)}", end='\n\n')
 
-    epochs = 10
-    batch_size = 32
-    results = dnn(x_train, y_train, x_test, y_test, epochs, batch_size, verb=1)
+    epochs = 25
+    batch_size = 16
+    results = gap(x_train, y_train, x_test, y_test, epochs, batch_size, verb=1)
     print(results)
