@@ -43,7 +43,7 @@ def dropout(x_train, y_train, x_test, y_test, ep, bs, verb=0):
     model.fit(x_train, y_train, epochs=ep, batch_size=bs, verbose=verb)
 
     loss, accuracy, precision, recall, f1 = model.evaluate(x_test, y_test, batch_size=bs, verbose=verb)
-    return f"val_loss: {loss}\nval_accuracy: {accuracy}\nval_precision: {precision}\nval_recall: {recall}\nval_f1: {f1}\n"
+    return f"val_loss: {round(loss,4)}\nval_accuracy: {round(accuracy,4)}\nval_precision: {round(precision,4)}\nval_recall: {round(recall,4)}\nval_f1: {round(f1,4)}\n"
 
 if __name__ == "__main__":
     from mnistloader import load_mnist, mnist_preprocess

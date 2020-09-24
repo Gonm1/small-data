@@ -22,16 +22,13 @@ def gap(x_train, y_train, x_test, y_test, ep, bs, verb=0):
     # build model
     model = Sequential()
     model.add(Conv2D(filters=64, kernel_size=(7,7), input_shape=(28, 28, 1), activation='relu', padding='same'))
-    model.add(GlobalAveragePooling2D(data_format='channels_last'))
+    model.add(MaxPooling2D(pool_size=(4,4)))
     model.add(Conv2D(filters=128, kernel_size=(5,5), activation='relu', padding='same'))
-    model.add(GlobalAveragePooling2D(data_format='channels_last'))
     model.add(Conv2D(filters=64, kernel_size=(5,5), activation='relu', padding='same'))
-    model.add(GlobalAveragePooling2D(data_format='channels_last'))
     model.add(Conv2D(filters=64, kernel_size=(5,5), activation='relu', padding='same'))
-    model.add(GlobalAveragePooling2D(data_format='channels_last'))
     model.add(Conv2D(filters=32, kernel_size=(7,7), activation='relu', padding='same'))
-    model.add(GlobalAveragePooling2D(data_format='channels_last'))
     model.add(Conv2D(filters=128, kernel_size=(5,5), activation='relu', padding='same'))
+    model.add(GlobalAveragePooling2D())
     model.add(Flatten())
     model.add(Dense(128, activation='relu'))
     model.add(Dense(64, activation='relu'))
@@ -45,7 +42,7 @@ def gap(x_train, y_train, x_test, y_test, ep, bs, verb=0):
     model.fit(x_train, y_train, epochs=ep, batch_size=bs, verbose=verb)
 
     loss, accuracy, precision, recall, f1 = model.evaluate(x_test, y_test, batch_size=bs, verbose=verb)
-    return f"val_loss: {loss}\nval_accuracy: {accuracy}\nval_precision: {precision}\nval_recall: {recall}\nval_f1: {f1}\n"
+    return f"val_loss: {round(loss,4)}\nval_accuracy: {round(accuracy,4)}\nval_precision: {round(precision,4)}\nval_recall: {round(recall,4)}\nval_f1: {round(f1,4)}\n"
 
 if __name__ == "__main__":
     from mnistloader import load_mnist, mnist_preprocess
@@ -75,6 +72,6 @@ if __name__ == "__main__":
     print(f"Test set size: {len(x_test)}", end='\n\n')
 
     epochs = 25
-    batch_size = 16
+    batch_size = 32
     results = gap(x_train, y_train, x_test, y_test, epochs, batch_size, verb=1)
     print(results)

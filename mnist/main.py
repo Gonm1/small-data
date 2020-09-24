@@ -8,6 +8,10 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' # ignore tf warnings about cuda
 from svm import svm_f
 from dnn import dnn
 from dropout import dropout
+from gap import gap
+from bnorm import bnorm
+from closs import closs
+from dconv import dconv
 
 seed_value = 0
 def set_seed(s=0):
@@ -37,23 +41,55 @@ print("default svm run")
 results = svm_f(x_train, y_train, x_test, y_test)
 print(results)
 
+epochs = 25
+batch_size = 64
+
 set_seed(seed_value)
 print("normal dnn run")
-epochs = 10
-batch_size = 32
+# epochs = 10
+# batch_size = 32
 results = dnn(x_train, y_train, x_test, y_test, epochs, batch_size)
 print(results)
 
 set_seed(seed_value)
 print("dropout dnn run")
-epochs = 25
-batch_size = 16
-results = dropout(x_train, y_train, x_test, y_test, epochs, batch_size, verb=1)
+# epochs = 25
+# batch_size = 32
+results = dropout(x_train, y_train, x_test, y_test, epochs, batch_size)
 print(results)
 
 set_seed(seed_value)
-print("dropout dnn run")
-epochs = 25
-batch_size = 16
-results = gap(x_train, y_train, x_test, y_test, epochs, batch_size, verb=1)
+print("gap dnn run")
+# epochs = 25
+# batch_size = 32
+results = gap(x_train, y_train, x_test, y_test, epochs, batch_size)
 print(results)
+
+set_seed(seed_value)
+print("bnorm dnn run")
+# epochs = 25
+# batch_size = 16
+results = bnorm(x_train, y_train, x_test, y_test, epochs, batch_size)
+print(results)
+
+set_seed(seed_value)
+print("closs dnn run")
+# epochs = 25
+# batch_size = 64
+results = closs(x_train, y_train, x_test, y_test, epochs, batch_size)
+print(results)
+
+set_seed(seed_value)
+print("dconv dnn run")
+# epochs = 25
+# batch_size = 32
+results = dconv(x_train, y_train, x_test, y_test, epochs, batch_size)
+print(results)
+
+set_seed(seed_value)
+print("CLR dnn run" + " pending")
+# epochs = 25
+# batch_size = 32
+#results = dconv(x_train, y_train, x_test, y_test, epochs, batch_size)
+#print(results)
+

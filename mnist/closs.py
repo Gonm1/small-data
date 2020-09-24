@@ -2,7 +2,7 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' # ignore tf warnings about cuda
 from keras.layers import Conv2D, MaxPooling2D, Dropout, Dense, Flatten
 from keras.metrics import Precision, Recall, CategoricalAccuracy
-from keras.losses import CategoricalCrossentropy
+from keras.losses import CosineSimilarity
 from keras.models import Sequential
 from keras.optimizers import Adam
 from keras import backend as K
@@ -17,7 +17,7 @@ def F1Measure(y_true, y_pred): #taken from old keras source code
     f1_val = 2*(precision*recall)/(precision+recall+K.epsilon())
     return f1_val
 
-def dnn(x_train, y_train, x_test, y_test, ep, bs, verb=0):
+def closs(x_train, y_train, x_test, y_test, ep, bs, verb=0):
     num_classes = y_test.shape[1]
     # build model
     model = Sequential()
@@ -33,7 +33,7 @@ def dnn(x_train, y_train, x_test, y_test, ep, bs, verb=0):
     model.add(Dense(32, activation='relu'))
     model.add(Dense(num_classes, activation='softmax'))
 
-    model.compile(loss=CategoricalCrossentropy(), optimizer=Adam(lr=0.001), metrics=[CategoricalAccuracy(), Precision(), Recall(), F1Measure])
+    model.compile(loss=CosineSimilarity(), optimizer=Adam(lr=0.001), metrics=[CategoricalAccuracy(), Precision(), Recall(), F1Measure])
 
     if verb != 0:
         model.summary()
@@ -72,5 +72,5 @@ if __name__ == "__main__":
 
     epochs = 10
     batch_size = 32
-    results = dnn(x_train, y_train, x_test, y_test, epochs, batch_size, verb=1)
+    results = closs(x_train, y_train, x_test, y_test, epochs, batch_size, verb=1)
     print(results)

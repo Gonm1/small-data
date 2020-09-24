@@ -26,13 +26,13 @@ def svm_f(x_train, y_train, x_test, y_test, verb=0):
     accuracy = metrics.accuracy_score(y_true=y_test, y_pred=predictions)
 
     # The precision is intuitively the ability of the classifier not to label as positive a sample that is negative.
-    precision = metrics.precision_score(y_true=y_test, y_pred=predictions, average=None)
+    precision = metrics.precision_score(y_true=y_test, y_pred=predictions, average='micro')
 
-    recall = metrics.recall_score(y_true=y_test, y_pred=predictions, average=None)
+    recall = metrics.recall_score(y_true=y_test, y_pred=predictions, average='micro')
 
-    f1 = metrics.f1_score(y_true=y_test, y_pred=predictions, average=None)
+    f1 = metrics.f1_score(y_true=y_test, y_pred=predictions, average='micro')
 
-    return f"val_accuracy: {accuracy}\nval_precision: {precision}\nval_recall{recall}\nval_f1: {f1}\n"
+    return f"val_accuracy: {round(accuracy,4)}\nval_precision: {round(precision,4)}\nval_recall{round(recall,4)}\nval_f1: {round(f1,4)}\n"
 
 if __name__ == "__main__":
     from mnistloader import load_mnist, mnist_preprocess
