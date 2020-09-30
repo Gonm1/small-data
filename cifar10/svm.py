@@ -36,11 +36,11 @@ accuracy = metrics.accuracy_score(y_true=y_test, y_pred=predictions)
 print("Accuracy: ", accuracy)
 
 # The precision is intuitively the ability of the classifier not to label as positive a sample that is negative.
-precision = metrics.precision_score(y_true=y_test, y_pred=predictions, average=None)
+precision = metrics.precision_score(y_true=y_test, y_pred=predictions, average='micro')
 print("Precision: ", precision)
 
-recall = metrics.recall_score(y_true=y_test, y_pred=predictions, average=None)
+recall = metrics.recall_score(y_true=y_test, y_pred=predictions, average='micro')
 print("Recall: ", recall)
 
-f1 = metrics.f1_score(y_true=y_test, y_pred=predictions, average=None)
+f1 = metrics.f1_score(y_true=y_test, y_pred=predictions, average='micro')
 print("F1: ", f1)
