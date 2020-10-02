@@ -62,4 +62,4 @@ if __name__ == "__main__":
     print(f"Training set size: {len(x_train)}")
     print(f"Test set size: {len(x_test)}", end='\n\n')
 
-    print(ff(x_train, y_train, x_test, y_test))
+    print(svm_f(x_train, y_train, x_test, y_test))

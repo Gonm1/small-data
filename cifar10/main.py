@@ -1,4 +1,4 @@
-from mnistloader import load_mnist, mnist_preprocess
+from cifarloader import load_cifar, cifar_preprocess
 import tensorflow as tf
 import numpy as np
 import random
@@ -27,11 +27,11 @@ def set_seed(s=0):
 
 set_seed(seed_value)
 # Load the dataset
-x_train, y_train, x_test, y_test = load_mnist(items_per_class=10, seed=seed_value) # 10 items per class means a dataset size of 100
+x_train, y_train, x_test, y_test = load_cifar(items_per_class=10, seed=seed_value) # 10 items per class means a dataset size of 100
 print("Shape after loading: ", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
 
 # Pre process images
-x_train, y_train, x_test, y_test = mnist_preprocess(x_train, y_train, x_test, y_test)
+x_train, y_train, x_test, y_test = cifar_preprocess(x_train, y_train, x_test, y_test)
 print("Shape after pre processing: ", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
 
 print(f"Training set size: {len(x_train)}")

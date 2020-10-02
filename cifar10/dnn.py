@@ -1,6 +1,6 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' # ignore tf warnings about cuda
-from keras.layers import Conv2D, MaxPooling2D, Dropout, Dense, Flatten
+from keras.layers import Conv2D, MaxPooling2D, Dense, Flatten
 from keras.metrics import Precision, Recall, CategoricalAccuracy
 from keras.losses import CategoricalCrossentropy
 from keras.models import Sequential
