@@ -16,6 +16,7 @@ from clr import clr
 
 seed_value = 0
 def set_seed(s=0):
+    "https://stackoverflow.com/a/52897216/9082357"
     # 1. Set the `PYTHONHASHSEED` environment variable at a fixed value
     os.environ['PYTHONHASHSEED']=str(seed_value)
     # 2. Set the `python` built-in pseudo-random generator at a fixed value
@@ -27,7 +28,7 @@ def set_seed(s=0):
 
 set_seed(seed_value)
 # Load the dataset
-x_train, y_train, x_test, y_test = load_mnist(items_per_class=10, seed=seed_value) # 10 items per class means a dataset size of 100
+x_train, y_train, x_test, y_test = load_mnist(items_per_class=20, seed=seed_value) # 10 items per class means a dataset size of 100
 print("Shape after loading: ", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
 
 # Pre process images
@@ -43,7 +44,7 @@ results = svm_f(x_train, y_train, x_test, y_test)
 print(results)
 
 epochs = 25
-batch_size = 32
+batch_size = 64
 
 set_seed(seed_value)
 print("normal dnn run")

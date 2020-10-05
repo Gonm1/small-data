@@ -16,6 +16,7 @@ from clr import clr
 
 seed_value = 0
 def set_seed(s=0):
+    "https://stackoverflow.com/a/52897216/9082357"
     # 1. Set the `PYTHONHASHSEED` environment variable at a fixed value
     os.environ['PYTHONHASHSEED']=str(seed_value)
     # 2. Set the `python` built-in pseudo-random generator at a fixed value
