@@ -2,10 +2,10 @@ from sklearn import svm, metrics
 import numpy as np
 
 
-def svm_f(x_train, y_train, x_test, y_test, verb=0):
+def svm_f(x_train, y_train, x_test, y_test, verb=0, img_size=100):
     # Reshape to vector form
-    x_train = x_train.reshape(len(x_train), 100*100)
-    x_test = x_test.reshape(len(x_test), 100*100)
+    x_train = x_train.reshape(len(x_train), img_size*img_size)
+    x_test = x_test.reshape(len(x_test), img_size*img_size)
     print("Shape after converting to vector", x_train.shape,
           y_train.shape, x_test.shape, y_test.shape)
 
@@ -56,18 +56,20 @@ if __name__ == "__main__":
     np.random.seed(seed_value)
     # 4. Set the `tensorflow` pseudo-random generator at a fixed value
     tf.random.set_seed(seed_value)
+
+    SIZE = 50
     # Load the dataset
-    x_train, y_train, x_test, y_test = load_flowers()
+    x_train, y_train, x_test, y_test = load_flowers(img_size=SIZE)
     print("Shape after loading: ", x_train.shape,
           y_train.shape, x_test.shape, y_test.shape)
 
     # Pre process images
     x_train, y_train, x_test, y_test = flowers_preprocess(
-        x_train, y_train, x_test, y_test)
+        x_train, y_train, x_test, y_test, image_size=SIZE)
     print("Shape after pre processing: ", x_train.shape,
           y_train.shape, x_test.shape, y_test.shape)
 
     print(f"Training set size: {len(x_train)}")
     print(f"Test set size: {len(x_test)}", end='\n\n')
 
-    print(svm_f(x_train, y_train, x_test, y_test))
+    print(svm_f(x_train, y_train, x_test, y_test, img_size=SIZE))
