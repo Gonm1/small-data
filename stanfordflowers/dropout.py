@@ -1,6 +1,6 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' # ignore tf warnings about cuda
-from keras.layers import Conv2D, MaxPooling2D, Dense, Flatten
+from keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, Dropout, Activation
 from keras.metrics import Precision, Recall, CategoricalAccuracy
 from keras.losses import CategoricalCrossentropy
 from keras.models import Sequential
@@ -21,14 +21,20 @@ def dnn(x_train, y_train, x_test, y_test, ep, bs, verb=0, img_size=50):
     num_classes = y_test.shape[1]
     # build model
     model = Sequential()
-    model.add(Conv2D(filters=64, kernel_size=(7,7), input_shape=(img_size, img_size, 1), activation='relu', padding='same'))
-    model.add(MaxPooling2D(pool_size=(4,4)))
+    model.add(Conv2D(filters=32, kernel_size=(3,3), input_shape=(img_size, img_size, 1)))
+    model.add(MaxPooling2D(pool_size=(2,2)))
+    model.add(Activation('relu'))
+    model.add(Conv2D(filters=32, kernel_size=(3,3)))
+    model.add(MaxPooling2D(pool_size=(2,2)))
+    model.add(Activation('relu'))
     model.add(Flatten())
+    model.add(Dropout(0.25))
+    model.add(Dense(512, activation='relu'))
+    model.add(Dropout(0.5))
     model.add(Dense(256, activation='relu'))
-    model.add(Dense(128, activation='relu'))
     model.add(Dense(num_classes, activation='softmax'))
 
-    model.compile(loss=CategoricalCrossentropy(), optimizer=Adam(lr=0.0001), metrics=[CategoricalAccuracy(), Precision(), Recall(), F1Measure])
+    model.compile(loss=CategoricalCrossentropy(), optimizer=Adam(lr=0.001), metrics=[CategoricalAccuracy(), Precision(), Recall(), F1Measure])
 
     if verb != 0:
         model.summary()
@@ -74,7 +80,7 @@ if __name__ == "__main__":
     print(f"Training set size: {len(x_train)}")
     print(f"Test set size: {len(x_test)}", end='\n\n')
 
-    epochs = 5
-    batch_size = 128
+    epochs = 10
+    batch_size = 64
     results = dnn(x_train, y_train, x_test, y_test, epochs, batch_size, verb=1, img_size=SIZE)
     print(results)
