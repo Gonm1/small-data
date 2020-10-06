@@ -54,7 +54,7 @@ def load_flowers(img_size=100):
     return x_train, y_train, x_test, y_test
 
 
-def flowers_preprocess(x_train, y_train, x_test, y_test, image_size=100):
+def flowers_preprocess(x_train, y_train, x_test, y_test, img_size=100):
     # Pre-processing
     
     x_train_grayscale = np.zeros(x_train.shape[:-1])
@@ -84,7 +84,17 @@ def flowers_preprocess(x_train, y_train, x_test, y_test, image_size=100):
 
 
 if __name__ == "__main__":
-    x_train, y_train, x_test, y_test = load_flowers()
-    print(x_train.shape, y_train.shape, x_test.shape, y_test.shape)
-    x_train, y_train, x_test, y_test = flowers_preprocess(x_train, y_train, x_test, y_test)
-    print(x_train.shape, y_train.shape, x_test.shape, y_test.shape)
+    import pickle
+    try:
+        pickle_in = open("Dataset/LoadedDataset.pickle", "rb")
+        x_train, y_train, x_test, y_test = pickle.load(pickle_in)
+        pickle_in.close()
+        print(x_train.shape, y_train.shape, x_test.shape, y_test.shape)
+    except (OSError, IOError) as e:
+        x_train, y_train, x_test, y_test = load_flowers(img_size=50)
+        x_train, y_train, x_test, y_test = flowers_preprocess(x_train, y_train, x_test, y_test, img_size=50)
+        print(x_train.shape, y_train.shape, x_test.shape, y_test.shape)
+
+        pickle_out = open("Dataset/LoadedDataset.pickle", "wb")
+        pickle.dump((x_train, y_train, x_test, y_test), pickle_out)
+        pickle_out.close()
