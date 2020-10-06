@@ -65,7 +65,7 @@ if __name__ == "__main__":
 
     # Pre process images
     x_train, y_train, x_test, y_test = flowers_preprocess(
-        x_train, y_train, x_test, y_test, image_size=SIZE)
+        x_train, y_train, x_test, y_test, img_size=SIZE)
     print("Shape after pre processing: ", x_train.shape,
           y_train.shape, x_test.shape, y_test.shape)
 
