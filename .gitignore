@@ -1,5 +1,5 @@
 # pickle files
-.pickle
+*.pickle
 
 # Visual studio code
 .vscode
