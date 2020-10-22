@@ -3,6 +3,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' # ignore tf warnings about cuda
 from keras.layers import Conv2D, MaxPooling2D, Dropout, Dense, Flatten
 from keras.metrics import Precision, Recall, CategoricalAccuracy
 from keras.losses import CategoricalCrossentropy
+from keras.callbacks import EarlyStopping
 from keras.models import Sequential
 from keras.optimizers import Adam
 from keras import backend as K
@@ -33,16 +34,18 @@ def dnn(x_train, y_train, x_test, y_test, ep, bs, verb=0):
     model.add(Dense(32, activation='relu'))
     model.add(Dense(num_classes, activation='softmax'))
 
+    
     model.compile(loss=CategoricalCrossentropy(), optimizer=Adam(lr=0.001), metrics=[CategoricalAccuracy(), Precision(), Recall(), F1Measure])
 
-    if verb != 0:
-        model.summary()
-
-    model.fit(x_train, y_train, epochs=ep, batch_size=bs, verbose=verb)
+    if verb: model.summary()
+    
+    earlyStop = EarlyStopping(monitor='loss', mode='min', patience=2)
+    model.fit(x_train, y_train, epochs=ep, batch_size=bs, verbose=verb, callbacks=[earlyStop])
 
     loss, accuracy, precision, recall, f1 = model.evaluate(x_test, y_test, batch_size=bs, verbose=verb)
-    return f"val_loss: {round(loss,4)}\nval_accuracy: {round(accuracy,4)}\nval_precision: {round(precision,4)}\nval_recall: {round(recall,4)}\nval_f1: {round(f1,4)}\n"
-
+    #return f"val_loss: {round(loss,4)}\nval_accuracy: {round(accuracy,4)}\nval_precision: {round(precision,4)}\nval_recall: {round(recall,4)}\nval_f1: {round(f1,4)}\n"
+    return round(loss,4), round(accuracy,4), round(precision,4), round(recall,4), round(f1,4)
+    
 if __name__ == "__main__":
     from mnistloader import load_mnist, mnist_preprocess
     import tensorflow as tf
@@ -59,18 +62,25 @@ if __name__ == "__main__":
     # 4. Set the `tensorflow` pseudo-random generator at a fixed value
     tf.random.set_seed(seed_value)
 
-    # Load the dataset
-    x_train, y_train, x_test, y_test = load_mnist(items_per_class=10, seed=seed_value) # 10 items per class means a dataset size of 100
-    print("Shape after loading: ", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
+    items = [10, 50, 250, 500]
+    results = np.zeros((4,6))
+    for index, item in enumerate(items):
 
-    # Pre process images
-    x_train, y_train, x_test, y_test = mnist_preprocess(x_train, y_train, x_test, y_test)
-    print("Shape after pre processing: ", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
+        # Load the dataset
+        x_train, y_train, x_test, y_test = load_mnist(items_per_class=item, seed=seed_value) # 10 items per class means a dataset size of 100
+        print("Shape after loading: ", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
 
-    print(f"Training set size: {len(x_train)}")
-    print(f"Test set size: {len(x_test)}", end='\n\n')
+        # Pre process images
+        x_train, y_train, x_test, y_test = mnist_preprocess(x_train, y_train, x_test, y_test)
+        print("Shape after pre processing: ", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
 
-    epochs = 10
-    batch_size = 32
-    results = dnn(x_train, y_train, x_test, y_test, epochs, batch_size, verb=1)
+        print(f"Training set size: {len(x_train)}")
+        print(f"Test set size: {len(x_test)}", end='\n\n')
+
+        epochs = 20
+        batch_size = 32
+        loss, accuracy, precision, recall, f1 = dnn(x_train, y_train, x_test, y_test, epochs, batch_size, verb=1)
+        results[index] = item*10, loss, accuracy, precision, recall, f1
+
+    np.set_printoptions(suppress=True)
     print(results)
