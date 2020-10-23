@@ -3,19 +3,10 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' # ignore tf warnings about cuda
 from keras.layers import Conv2D, MaxPooling2D, Dropout, Dense, Flatten, Dropout
 from keras.metrics import Precision, Recall, CategoricalAccuracy
 from keras.losses import CategoricalCrossentropy
+from keras.callbacks import EarlyStopping
 from keras.models import Sequential
 from keras.optimizers import Adam
-from keras import backend as K
-
-def F1Measure(y_true, y_pred): #taken from old keras source code
-    "Function from https://medium.com/@aakashgoel12/how-to-add-user-defined-function-get-f1-score-in-keras-metrics-3013f979ce0d"
-    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
-    possible_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
-    predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
-    precision = true_positives / (predicted_positives + K.epsilon())
-    recall = true_positives / (possible_positives + K.epsilon())
-    f1_val = 2*(precision*recall)/(precision+recall+K.epsilon())
-    return f1_val
+from utils import F1Measure
 
 def dropout(x_train, y_train, x_test, y_test, ep, bs, verb=0):
     num_classes = y_test.shape[1]
@@ -40,13 +31,15 @@ def dropout(x_train, y_train, x_test, y_test, ep, bs, verb=0):
     if verb != 0:
         model.summary()
 
-    model.fit(x_train, y_train, epochs=ep, batch_size=bs, verbose=verb)
+    earlyStop = EarlyStopping(monitor='val_loss', mode='min', patience=2)
+    history = model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=ep, batch_size=bs, verbose=verb, callbacks=[earlyStop])
 
     loss, accuracy, precision, recall, f1 = model.evaluate(x_test, y_test, batch_size=bs, verbose=verb)
-    return f"val_loss: {round(loss,4)}\nval_accuracy: {round(accuracy,4)}\nval_precision: {round(precision,4)}\nval_recall: {round(recall,4)}\nval_f1: {round(f1,4)}\n"
+    return history, round(loss,4), round(accuracy,4), round(precision,4), round(recall,4), round(f1,4)
 
 if __name__ == "__main__":
     from mnistloader import load_mnist, mnist_preprocess
+    from utils import set_seeds, make_graphs
     import tensorflow as tf
     import numpy as np
     import random
@@ -61,18 +54,27 @@ if __name__ == "__main__":
     # 4. Set the `tensorflow` pseudo-random generator at a fixed value
     tf.random.set_seed(seed_value)
 
-    # Load the dataset
-    x_train, y_train, x_test, y_test = load_mnist(items_per_class=10, seed=seed_value) # 10 items per class means a dataset size of 100
-    print("Shape after loading: ", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
+    items = [10, 50, 250, 500]
+    results = np.zeros((4,6))
+    for index, item in enumerate(items):
 
-    # Pre process images
-    x_train, y_train, x_test, y_test = mnist_preprocess(x_train, y_train, x_test, y_test)
-    print("Shape after pre processing: ", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
+        # Load the dataset
+        x_train, y_train, x_test, y_test = load_mnist(items_per_class=item, seed=seed_value) # 10 items per class means a dataset size of 100
+        print("Shape after loading: ", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
 
-    print(f"Training set size: {len(x_train)}")
-    print(f"Test set size: {len(x_test)}", end='\n\n')
+        # Pre process images
+        x_train, y_train, x_test, y_test = mnist_preprocess(x_train, y_train, x_test, y_test)
+        print("Shape after pre processing: ", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
 
-    epochs = 25
-    batch_size = 16
-    results = dropout(x_train, y_train, x_test, y_test, epochs, batch_size, verb=1)
+        print(f"Training set size: {len(x_train)}")
+        print(f"Test set size: {len(x_test)}", end='\n\n')
+
+        epochs = 25
+        batch_size = 16
+        history, loss, accuracy, precision, recall, f1 = dropout(x_train, y_train, x_test, y_test, epochs, batch_size, verb=1)
+        results[index] = item*10, loss, accuracy, precision, recall, f1
+
+        make_graphs(history, item, 'dropout')
+    
+    np.set_printoptions(suppress=True)
     print(results)
