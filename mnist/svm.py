@@ -73,4 +73,5 @@ if __name__ == "__main__":
         print("Training complete", end='\n\n')
     
     print('  Size\t     accuracy precision recall  f1')
+    np.set_printoptions(suppress=True)
     print(results)
