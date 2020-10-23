@@ -1,3 +1,8 @@
+# .pdf generated in code folders
+/mnist/*.pdf
+/cifar10/*.pdf
+/stanfordflowers/*.pdf
+
 # pickle files
 *.pickle
 
