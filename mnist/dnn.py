@@ -13,23 +13,22 @@ def dnn(x_train, y_train, x_test, y_test, ep, bs, verb=0):
     # build model
     model = Sequential()
     model.add(Conv2D(filters=64, kernel_size=(7,7), input_shape=(28, 28, 1), activation='relu', padding='same'))
-    model.add(MaxPooling2D(pool_size=(4,4)))
+    model.add(MaxPooling2D(pool_size=(4,4), padding='same'))
     model.add(Conv2D(filters=128, kernel_size=(5,5), activation='relu', padding='same'))
     model.add(Conv2D(filters=64, kernel_size=(5,5), activation='relu', padding='same'))
     model.add(Conv2D(filters=64, kernel_size=(5,5), activation='relu', padding='same'))
     model.add(Conv2D(filters=32, kernel_size=(7,7), activation='relu', padding='same'))
     model.add(Conv2D(filters=128, kernel_size=(5,5), activation='relu', padding='same'))
     model.add(Flatten())
-    model.add(Dense(32, activation='relu'))
-    model.add(Dense(32, activation='relu'))
+    model.add(Dense(units = 32, activation='relu'))
+    model.add(Dense(units = 32, activation='relu'))
     model.add(Dense(num_classes, activation='softmax'))
-
     
     model.compile(loss=CategoricalCrossentropy(), optimizer=Adam(lr=0.001), metrics=[CategoricalAccuracy(), Precision(), Recall(), F1Measure])
 
     if verb: model.summary()
 
-    earlyStop = EarlyStopping(monitor='val_loss', mode='min', patience=2, verbose=verb)
+    earlyStop = EarlyStopping(monitor='val_loss', mode='min', patience=5, verbose=verb)
     history = model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=ep, batch_size=bs, verbose=verb, callbacks=[earlyStop])
 
     loss, accuracy, precision, recall, f1 = model.evaluate(x_test, y_test, batch_size=bs, verbose=verb)
@@ -67,7 +66,7 @@ if __name__ == "__main__":
         print(f"Training set size: {len(x_train)}")
         print(f"Test set size: {len(x_test)}", end='\n\n')
 
-        epochs = 20
+        epochs = 30
         batch_size = 32
         history, loss, accuracy, precision, recall, f1 = dnn(x_train, y_train, x_test, y_test, epochs, batch_size, verb=1)
         results[index] = item*10, loss, accuracy, precision, recall, f1
