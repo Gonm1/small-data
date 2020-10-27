@@ -55,10 +55,12 @@ sklearn==0.0
 tensorboard==2.3.0
 tensorboard-plugin-wit==1.7.0
 tensorflow==2.3.0
+tensorflow-addons==0.11.2
 tensorflow-estimator==2.3.0
 termcolor==1.1.0
 threadpoolctl==2.1.0
 toml==0.10.1
+typeguard==2.10.0
 urllib3==1.25.8
 webencodings==0.5.1
 Werkzeug==1.0.1
