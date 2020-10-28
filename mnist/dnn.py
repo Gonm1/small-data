@@ -6,7 +6,7 @@ from keras.losses import CategoricalCrossentropy
 from keras.callbacks import EarlyStopping
 from keras.models import Sequential
 from keras.optimizers import Adam
-from utils import F1Measure
+from tensorflow_addons.metrics import F1Score
 
 def dnn(x_train, y_train, x_test, y_test, ep, bs, verb=0):
     num_classes = y_test.shape[1]
@@ -20,11 +20,11 @@ def dnn(x_train, y_train, x_test, y_test, ep, bs, verb=0):
     model.add(Conv2D(filters=32, kernel_size=(7,7), activation='relu', padding='same'))
     model.add(Conv2D(filters=128, kernel_size=(5,5), activation='relu', padding='same'))
     model.add(Flatten())
-    model.add(Dense(units = 32, activation='relu'))
+    model.add(Dense(units = 64, activation='relu'))
     model.add(Dense(units = 32, activation='relu'))
     model.add(Dense(num_classes, activation='softmax'))
     
-    model.compile(loss=CategoricalCrossentropy(), optimizer=Adam(lr=0.001), metrics=[CategoricalAccuracy(), Precision(), Recall(), F1Measure])
+    model.compile(loss=CategoricalCrossentropy(), optimizer=Adam(lr=0.001), metrics=[CategoricalAccuracy(), Precision(), Recall(), F1Score(num_classes=num_classes, average='macro')])
 
     if verb: model.summary()
 
