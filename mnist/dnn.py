@@ -20,7 +20,7 @@ def dnn(x_train, y_train, x_test, y_test, ep, bs, verb=0):
     model.add(Conv2D(filters=32, kernel_size=(7,7), activation='relu', padding='same'))
     model.add(Conv2D(filters=128, kernel_size=(5,5), activation='relu', padding='same'))
     model.add(Flatten())
-    model.add(Dense(units = 64, activation='relu'))
+    model.add(Dense(units = 32, activation='relu'))
     model.add(Dense(units = 32, activation='relu'))
     model.add(Dense(num_classes, activation='softmax'))
     
