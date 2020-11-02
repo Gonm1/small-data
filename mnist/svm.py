@@ -1,6 +1,6 @@
+from sklearn.metrics import classification_report, matthews_corrcoef
 from mnistloader import load_mnist, mnist_preprocess
 from sklearn import svm
-from sklearn.metrics import classification_report, matthews_corrcoef
 import tensorflow as tf
 import numpy as np
 import random
@@ -54,22 +54,8 @@ for index, item in enumerate(items):
     # Model testing
     predictions = clf.predict(x_test)
 
-    # accuracy = metrics.accuracy_score(y_true=y_test, y_pred=predictions)
-
-    # # The precision is intuitively the ability of the classifier not to label as positive a sample that is negative.
-    # precision = metrics.precision_score(y_true=y_test, y_pred=predictions, average='macro')
-
-    # recall = metrics.recall_score(y_true=y_test, y_pred=predictions, average='macro')
-
-    # f1 = metrics.f1_score(y_true=y_test, y_pred=predictions, average='macro')
-
-    # results[index] = item*10, accuracy, precision, recall, f1
     if VERBOSE: print("Training complete", end='\n\n')
-    print(classification_report(y_true=y_test, y_pred=clf.predict(x_test)))
-    print("MCC: ", matthews_corrcoef(y_true=y_test, y_pred=clf.predict(x_test)))
+    print("items/class: ", item)
+    print(classification_report(y_true=y_test, y_pred=predictions))
+    print("MCC: ", matthews_corrcoef(y_true=y_test, y_pred=predictions))
     print('--------------------------------------------------')
-
-
-# print('  Size\t     accuracy precision recall  f1')
-# np.set_printoptions(suppress=True)
-# print(results)
