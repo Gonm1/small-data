@@ -9,8 +9,7 @@ import os
 
 VERBOSE = 0
 items = [10, 50, 250, 500]
-results = np.zeros((4,5))
-for index, item in enumerate(items):
+for item in items:
     seed_value = 0
     # 1. Set the `PYTHONHASHSEED` environment variable at a fixed value
     os.environ['PYTHONHASHSEED']=str(seed_value)
@@ -56,6 +55,6 @@ for index, item in enumerate(items):
 
     if VERBOSE: print("Training complete", end='\n\n')
     print("items/class: ", item)
-    print(classification_report(y_true=y_test, y_pred=predictions))
+    print(classification_report(y_true=y_test, y_pred=predictions, digits=3))
     print("MCC: ", matthews_corrcoef(y_true=y_test, y_pred=predictions))
     print('--------------------------------------------------')
