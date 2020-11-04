@@ -27,6 +27,13 @@ def load_mnist(items_per_class=10, seed=0):
     Randomly picks "items_per_class" items from each class to form the training set.
     '''
 
+    # 1. Set the `PYTHONHASHSEED` environment variable at a fixed value
+    os.environ['PYTHONHASHSEED']=str(seed)
+    # 2. Set the `python` built-in pseudo-random generator at a fixed value
+    random.seed(seed)
+    # 3. Set the `numpy` pseudo-random generator at a fixed value
+    np.random.seed(seed)
+
     # Data loading
     training_images, training_labels = load_full_mnist(
         "Dataset/train")
@@ -36,7 +43,6 @@ def load_mnist(items_per_class=10, seed=0):
     x_train, y_train, indexed = [], [], []
     class_counter = np.zeros(10)
     done = False
-    random.seed(seed)
     while not done:
         index = random.randint(0, len(training_labels)-1)
         if class_counter[training_labels[index]] < items_per_class and index not in indexed:
