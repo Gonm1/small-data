@@ -3,7 +3,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' # ignore tf warnings about cuda
 from keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, GlobalAveragePooling2D, BatchNormalization, Dropout
 from keras.metrics import CategoricalAccuracy
 from sklearn.metrics import classification_report, matthews_corrcoef
-from keras.losses import CosineSimilarity
+from keras.losses import CosineSimilarity, CategoricalCrossentropy
 from keras.callbacks import EarlyStopping, LearningRateScheduler
 from keras.models import Sequential
 from keras.optimizers import Adam
@@ -14,12 +14,14 @@ import random
 from mnistloader import load_mnist, mnist_preprocess
 from utils import make_graphs
 
+GLOBAL_EPOCHS = 110
+
 def scheduler(epoch, lr):
-    lrmin=0.00001
-    lrmax=0.001
-    step_size=5
-    max_iter=100
-    delta=10
+    lrmin = 0.00001
+    lrmax = 0.001
+    step_size = 10
+    max_iter = GLOBAL_EPOCHS
+    delta = 10
     clr = lrmin + ((lrmax-lrmin)*(1.-np.fabs((epoch/step_size)-(2*np.floor(epoch/(2*step_size)))-1.)))
     clr_decay = clr/(1.+((delta-1.)*(epoch/max_iter)))
     return clr_decay
@@ -31,7 +33,7 @@ histories = list()
 items = [10]#, 50, 250, 500]
 for index, item in enumerate(items):
 
-    seed_value = 123456
+    seed_value = 0
     # 1. Set the `PYTHONHASHSEED` environment variable at a fixed value
     os.environ['PYTHONHASHSEED']=str(seed_value)
     # 2. Set the `python` built-in pseudo-random generator at a fixed value
@@ -52,7 +54,7 @@ for index, item in enumerate(items):
     if VERBOSE: print(f"Training set size: {len(x_train)}")
     if VERBOSE: print(f"Test set size: {len(x_test)}", end='\n\n')
 
-    epochs = 100
+    epochs = GLOBAL_EPOCHS
     batch_size = 32
     num_classes = y_test.shape[1]
     # build model
@@ -69,11 +71,10 @@ for index, item in enumerate(items):
     model.add(Dense(units=128, activation='relu'))
     model.add(BatchNormalization())
     model.add(Dropout(0.50))
-    model.add(BatchNormalization())
     model.add(Dense(units=64, activation='relu'))
     model.add(Dense(num_classes, activation='softmax'))
     
-    model.compile(loss=CosineSimilarity(), optimizer=Adam(lr=0.001), metrics=[CategoricalAccuracy()])
+    model.compile(loss=CosineSimilarity(axis=1), optimizer=Adam(lr=0.001), metrics=[CategoricalAccuracy()])
 
     if VERBOSE: model.summary()
     earlyStop = EarlyStopping(monitor='val_loss', mode='min', patience=15, verbose=VERBOSE)
