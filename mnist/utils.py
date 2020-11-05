@@ -16,5 +16,5 @@ def make_graphs(histories, items, prefix=''):
         axs[1][index].set_xlabel('Iteraciones', fontsize=fontsize)
         axs[1][0].set_ylabel('Accuracy', fontsize=fontsize)
     axs[0][0].legend()
-    pyplot.savefig(f"{prefix}-metrics.pdf")
+    pyplot.savefig(f"results/{prefix}-metrics.pdf")
     pyplot.close()
