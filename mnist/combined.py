@@ -7,9 +7,11 @@ from keras.losses import CosineSimilarity, CategoricalCrossentropy
 from keras.callbacks import EarlyStopping, LearningRateScheduler
 from keras.models import Sequential
 from keras.optimizers import Adam
+from pandas import DataFrame
 import tensorflow as tf
 import numpy as np
 import random
+import sys
 
 from mnistloader import load_mnist, mnist_preprocess
 from utils import make_graphs
@@ -29,6 +31,8 @@ def scheduler(epoch, lr):
 VERBOSE = 1
 if not VERBOSE: print("Change verbose to 1 to see messages.")
 
+mtcc = list()
+dicts = list()
 histories = list()
 items = [10, 50, 250, 500]
 for index, item in enumerate(items):
@@ -56,6 +60,7 @@ for index, item in enumerate(items):
 
     epochs = GLOBAL_EPOCHS
     batch_size = 32
+    learning_rate = 0.001
     num_classes = y_test.shape[1]
     # build model
     model = Sequential()
@@ -74,7 +79,7 @@ for index, item in enumerate(items):
     model.add(Dense(units=64, activation='relu'))
     model.add(Dense(num_classes, activation='softmax'))
     
-    model.compile(loss=CosineSimilarity(axis=1), optimizer=Adam(lr=0.001), metrics=[CategoricalAccuracy()])
+    model.compile(loss=CosineSimilarity(axis=1), optimizer=Adam(lr=learning_rate), metrics=[CategoricalAccuracy()])
 
     if VERBOSE: model.summary()
     earlyStop = EarlyStopping(monitor='val_loss', mode='min', patience=15, verbose=VERBOSE)
@@ -84,9 +89,28 @@ for index, item in enumerate(items):
     predictions = model.predict(x_test)
     y_test = np.argmax(y_test, axis=1)
     predictions = np.argmax(predictions, axis=1)
-    print("items/class: ", item)
-    print(classification_report(y_true=y_test, y_pred=predictions, digits=3))
-    print("mcc: ", matthews_corrcoef(y_true=y_test, y_pred=predictions))
-    print('--------------------------------------------------')
+    
+    dicts.append(classification_report(y_true=y_test, y_pred=predictions, digits=3, output_dict=True))
+    mtcc.append(matthews_corrcoef(y_true=y_test, y_pred=predictions))
 
-make_graphs(histories, items, 'combined-mnist')
+original_stdout = sys.stdout
+with open('results/combined.txt', 'w') as f:
+    sys.stdout = f
+    print(f'epochs: {epochs}')
+    print(f'batch size: {batch_size}')
+    print(f'learning rate: {learning_rate}')
+    print()
+    for index, dictt in enumerate(dicts):
+        print()
+        print("items/class: ", items[index])
+        df = DataFrame.from_dict(dictt).T.round(3)
+        df['support'] = df['support'].astype(int)
+        df.loc['accuracy', 'support'] = 10000
+        df.loc['accuracy','recall'] = '-'
+        df.loc['accuracy','precision'] = '-'
+        print(df)
+        print("mcc: ", mtcc[index])
+        print()
+    sys.stdout = original_stdout
+
+make_graphs(histories, items, 'combined')
