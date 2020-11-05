@@ -1,12 +1,15 @@
 from sklearn.metrics import classification_report, matthews_corrcoef
 from mnistloader import load_mnist, mnist_preprocess
+from pandas import DataFrame
 from sklearn import svm
 import tensorflow as tf
 import numpy as np
 import random
+import sys
 import os
 
-
+mtcc = list()
+dicts = list()
 VERBOSE = 0
 items = [10, 50, 250, 500]
 for item in items:
@@ -54,7 +57,28 @@ for item in items:
     predictions = clf.predict(x_test)
 
     if VERBOSE: print("Training complete", end='\n\n')
-    print("items/class: ", item)
-    print(classification_report(y_true=y_test, y_pred=predictions, digits=3))
-    print("MCC: ", matthews_corrcoef(y_true=y_test, y_pred=predictions))
-    print('--------------------------------------------------')
+
+    dicts.append(classification_report(y_true=y_test, y_pred=predictions, digits=3, output_dict=True))
+    mtcc.append(matthews_corrcoef(y_true=y_test, y_pred=predictions))
+
+original_stdout = sys.stdout
+with open('results/dnn.txt', 'w') as f:
+    sys.stdout = f
+    print(f'epochs: {epochs}')
+    print(f'batch size: {batch_size}')
+    print(f'learning rate: {learning_rate}')
+    print()
+    for index, dictt in enumerate(dicts):
+        print()
+        print("items/class: ", items[index])
+        df = DataFrame.from_dict(dictt).T.round(3)
+        df['support'] = df['support'].astype(int)
+        df.loc['accuracy', 'support'] = 10000
+        df.loc['accuracy','recall'] = '-'
+        df.loc['accuracy','precision'] = '-'
+        print(df)
+        print("mcc: ", mtcc[index])
+        print()
+    sys.stdout = original_stdout
+
+make_graphs(histories, items, 'dnn')
