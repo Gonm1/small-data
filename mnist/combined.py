@@ -30,7 +30,7 @@ VERBOSE = 1
 if not VERBOSE: print("Change verbose to 1 to see messages.")
 
 histories = list()
-items = [10]#, 50, 250, 500]
+items = [10, 50, 250, 500]
 for index, item in enumerate(items):
 
     seed_value = 0
