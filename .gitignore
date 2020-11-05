@@ -1,7 +1,10 @@
 # .pdf generated in code folders
-/mnist/*.pdf
-/cifar10/*.pdf
-/stanfordflowers/*.pdf
+/mnist/results/*.pdf
+/cifar10/results/*.pdf
+/stanfordflowers/results/*.pdf
+/mnist/results/*.txt
+/cifar10/results/*.txt
+/stanfordflowers/results/*.txt
 
 # pickle files
 *.pickle
