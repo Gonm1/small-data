@@ -22,11 +22,11 @@ def load_full_mnist(prefix):
     return data, labels
 
 
-def load_mnist(items_per_class=10, seed=0):
+def load_mnist(items_per_class=10):
     '''
     Randomly picks "items_per_class" items from each class to form the training set.
     '''
-
+    seed = 123456879
     # 1. Set the `PYTHONHASHSEED` environment variable at a fixed value
     os.environ['PYTHONHASHSEED']=str(seed)
     # 2. Set the `python` built-in pseudo-random generator at a fixed value

@@ -14,27 +14,20 @@ import random
 import sys
 
 from mnistloader import load_mnist, mnist_preprocess
-from utils import make_graphs
+from utils import make_graphs, print_to_file
 
-VERBOSE = 0
+VERBOSE = 1
 if not VERBOSE: print("Change verbose to 1 to see messages.")
 
+last_epochs = list()
+mccs = list()
+dicts = list()
 histories = list()
 items = [10, 50, 250, 500]
 for index, item in enumerate(items):
 
-    seed_value = 0
-    # 1. Set the `PYTHONHASHSEED` environment variable at a fixed value
-    os.environ['PYTHONHASHSEED']=str(seed_value)
-    # 2. Set the `python` built-in pseudo-random generator at a fixed value
-    random.seed(seed_value)
-    # 3. Set the `numpy` pseudo-random generator at a fixed value
-    np.random.seed(seed_value)
-    # 4. Set the `tensorflow` pseudo-random generator at a fixed value
-    tf.random.set_seed(seed_value)
-
     # Load the dataset
-    x_train, y_train, x_test, y_test = load_mnist(items_per_class=item, seed=seed_value) # 10 items per class means a dataset size of 100
+    x_train, y_train, x_test, y_test = load_mnist(items_per_class=item) # 10 items per class means a dataset size of 100
     if VERBOSE: print("Shape after loading: ", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
 
     # Pre process images
@@ -44,8 +37,20 @@ for index, item in enumerate(items):
     if VERBOSE: print(f"Training set size: {len(x_train)}")
     if VERBOSE: print(f"Test set size: {len(x_test)}", end='\n\n')
 
+    seed_value = 123456789
+    # 1. Set the `PYTHONHASHSEED` environment variable at a fixed value
+    os.environ['PYTHONHASHSEED']=str(seed_value)
+    # 2. Set the `python` built-in pseudo-random generator at a fixed value
+    random.seed(seed_value)
+    # 3. Set the `numpy` pseudo-random generator at a fixed value
+    np.random.seed(seed_value)
+    # 4. Set the `tensorflow` pseudo-random generator at a fixed value
+    tf.random.set_seed(seed_value)
+
     epochs = 30
     batch_size = 32
+    learning_rate = 0.001
+    patience = 5
     num_classes = y_test.shape[1]
     # build model
     model = Sequential()
@@ -59,10 +64,10 @@ for index, item in enumerate(items):
     model.add(GlobalAveragePooling2D())
     model.add(Dense(num_classes, activation='softmax'))
     
-    model.compile(loss=CategoricalCrossentropy(), optimizer=Adam(lr=0.001), metrics=[CategoricalAccuracy()])
+    model.compile(loss=CategoricalCrossentropy(), optimizer=Adam(lr=learning_rate), metrics=[CategoricalAccuracy()])
 
     if VERBOSE: model.summary()
-    earlyStop = EarlyStopping(monitor='val_loss', mode='min', patience=5, verbose=VERBOSE)
+    earlyStop = EarlyStopping(monitor='val_loss', mode='min', patience=patience, verbose=VERBOSE)
     history = model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=epochs, batch_size=batch_size, verbose=VERBOSE, callbacks=[earlyStop])
     histories.append(history)
 
@@ -71,9 +76,9 @@ for index, item in enumerate(items):
     y_test = np.argmax(y_test, axis=1)
     predictions = np.argmax(predictions, axis=1)
 
-    print("items/class: ", item)
-    print(classification_report(y_true=y_test, y_pred=predictions, digits=3))
-    print("mcc: ", matthews_corrcoef(y_true=y_test, y_pred=predictions))
-    print('--------------------------------------------------')
+    dicts.append(classification_report(y_true=y_test, y_pred=predictions, digits=3, output_dict=True))
+    mccs.append(matthews_corrcoef(y_true=y_test, y_pred=predictions))
+    last_epochs.append(len(history.history['loss']))
 
-make_graphs(histories, items, 'gap-mnist')
+print_to_file(dicts, mccs, items, epochs, batch_size, learning_rate, patience, last_epochs, 'gap')
+make_graphs(histories, items, 'gap')

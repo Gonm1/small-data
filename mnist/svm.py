@@ -8,23 +8,14 @@ import random
 import sys
 import os
 
-mtcc = list()
+mccs = list()
 dicts = list()
 VERBOSE = 0
 items = [10, 50, 250, 500]
 for item in items:
-    seed_value = 0
-    # 1. Set the `PYTHONHASHSEED` environment variable at a fixed value
-    os.environ['PYTHONHASHSEED']=str(seed_value)
-    # 2. Set the `python` built-in pseudo-random generator at a fixed value
-    random.seed(seed_value)
-    # 3. Set the `numpy` pseudo-random generator at a fixed value
-    np.random.seed(seed_value)
-    # 4. Set the `tensorflow` pseudo-random generator at a fixed value
-    tf.random.set_seed(seed_value)
 
     # Load the dataset
-    x_train, y_train, x_test, y_test = load_mnist(items_per_class=item, seed=seed_value) # 10 items per class means a dataset size of 100
+    x_train, y_train, x_test, y_test = load_mnist(items_per_class=item) # 10 items per class means a dataset size of 100
     if VERBOSE: print("Shape after loading: ", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
 
     # Pre process images
@@ -46,6 +37,16 @@ for item in items:
     y_test = np.asarray(y_test)
     if VERBOSE: print("Shape after converting labels: ", y_train.shape, y_train.shape)
 
+    seed_value = 0
+    # 1. Set the `PYTHONHASHSEED` environment variable at a fixed value
+    os.environ['PYTHONHASHSEED']=str(seed_value)
+    # 2. Set the `python` built-in pseudo-random generator at a fixed value
+    random.seed(seed_value)
+    # 3. Set the `numpy` pseudo-random generator at a fixed value
+    np.random.seed(seed_value)
+    # 4. Set the `tensorflow` pseudo-random generator at a fixed value
+    tf.random.set_seed(seed_value)
+
     # Model definition
     clf = svm.SVC(C=5.0, kernel='rbf', degree=3, gamma='scale', coef0=0.0, shrinking=True, probability=False, tol=1e-3, cache_size=200, class_weight=None, verbose=False, max_iter=-1, decision_function_shape='ovr', break_ties=False, random_state=None)
 
@@ -59,26 +60,21 @@ for item in items:
     if VERBOSE: print("Training complete", end='\n\n')
 
     dicts.append(classification_report(y_true=y_test, y_pred=predictions, digits=3, output_dict=True))
-    mtcc.append(matthews_corrcoef(y_true=y_test, y_pred=predictions))
+    mccs.append(matthews_corrcoef(y_true=y_test, y_pred=predictions))
 
 original_stdout = sys.stdout
-with open('results/dnn.txt', 'w') as f:
+with open(f'results/svm.txt', 'w') as f:
     sys.stdout = f
-    print(f'epochs: {epochs}')
-    print(f'batch size: {batch_size}')
-    print(f'learning rate: {learning_rate}')
-    print()
-    for index, dictt in enumerate(dicts):
+    for index, dictionary in enumerate(dicts):
         print()
         print("items/class: ", items[index])
-        df = DataFrame.from_dict(dictt).T.round(3)
-        df['support'] = df['support'].astype(int)
-        df.loc['accuracy', 'support'] = 10000
-        df.loc['accuracy','recall'] = '-'
-        df.loc['accuracy','precision'] = '-'
-        print(df)
-        print("mcc: ", mtcc[index])
+        dataFrame = DataFrame.from_dict(dictionary).T.round(3)
+        dataFrame['support'] = dataFrame['support'].astype(int)
+        dataFrame.loc['accuracy', 'support'] = 10000
+        dataFrame.loc['accuracy','recall'] = '-'
+        dataFrame.loc['accuracy','precision'] = '-'
+        print(dataFrame)
+        print("mcc: ", mccs[index])
         print()
-    sys.stdout = original_stdout
-
-make_graphs(histories, items, 'dnn')
+sys.stdout = original_stdout
+f.close()
