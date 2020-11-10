@@ -15,7 +15,7 @@ import sys
 
 from mnistloader import load_mnist, mnist_preprocess
 from utils import make_graphs, print_to_file
-import __main__
+
 
 VERBOSE = 1
 if not VERBOSE: print("Change verbose to 1 to see messages.")
@@ -38,7 +38,7 @@ for index, item in enumerate(items):
     if VERBOSE: print(f"Training set size: {len(x_train)}")
     if VERBOSE: print(f"Test set size: {len(x_test)}", end='\n\n')
 
-    seed_value = 123456
+    seed_value = 123456789
     # 1. Set the `PYTHONHASHSEED` environment variable at a fixed value
     os.environ['PYTHONHASHSEED']=str(seed_value)
     # 2. Set the `python` built-in pseudo-random generator at a fixed value
@@ -48,8 +48,8 @@ for index, item in enumerate(items):
     # 4. Set the `tensorflow` pseudo-random generator at a fixed value
     tf.random.set_seed(seed_value)
 
-    epochs = 60
-    batch_size = 16
+    epochs = 80
+    batch_size = 20
     learning_rate = 0.001
     patience = 15
     num_classes = y_test.shape[1]
@@ -63,7 +63,7 @@ for index, item in enumerate(items):
     model.add(Conv2D(filters=32, kernel_size=(7,7), activation='relu', padding='same'))
     model.add(Conv2D(filters=128, kernel_size=(5,5), activation='relu', padding='same'))
     model.add(Flatten())
-    model.add(Dropout(0.50))
+    model.add(Dropout(0.25))
     model.add(Dense(128, activation='relu'))
     model.add(Dropout(0.50))
     model.add(Dense(64, activation='relu'))
