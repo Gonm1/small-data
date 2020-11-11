@@ -16,7 +16,7 @@ import sys
 from mnistloader import load_mnist, mnist_preprocess
 from utils import make_graphs, print_to_file
 
-VERBOSE = 1
+VERBOSE = 0
 if not VERBOSE: print("Change verbose to 1 to see messages.")
 
 last_epochs = list()
@@ -37,7 +37,7 @@ for index, item in enumerate(items):
     if VERBOSE: print(f"Training set size: {len(x_train)}")
     if VERBOSE: print(f"Test set size: {len(x_test)}", end='\n\n')
 
-    seed_value = 123456789
+    seed_value = 123456
     # 1. Set the `PYTHONHASHSEED` environment variable at a fixed value
     os.environ['PYTHONHASHSEED']=str(seed_value)
     # 2. Set the `python` built-in pseudo-random generator at a fixed value
@@ -47,7 +47,7 @@ for index, item in enumerate(items):
     # 4. Set the `tensorflow` pseudo-random generator at a fixed value
     tf.random.set_seed(seed_value)
 
-    epochs = 30
+    epochs = 60
     batch_size = 32
     learning_rate = 0.001
     patience = 5
@@ -80,5 +80,5 @@ for index, item in enumerate(items):
     mccs.append(matthews_corrcoef(y_true=y_test, y_pred=predictions))
     last_epochs.append(len(history.history['loss']))
 
-print_to_file(dicts, mccs, items, epochs, batch_size, learning_rate, patience, last_epochs, 'gap')
+print_to_file(dicts, mccs, items, epochs, batch_size, learning_rate, patience, last_epochs, model, 'gap')
 make_graphs(histories, items, 'gap')

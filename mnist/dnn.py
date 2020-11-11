@@ -16,7 +16,7 @@ import sys
 from mnistloader import load_mnist, mnist_preprocess
 from utils import make_graphs, print_to_file
 
-VERBOSE = 1
+VERBOSE = 0
 if not VERBOSE: print("Change verbose to 1 to see messages.")
 
 last_epochs = list()
@@ -81,5 +81,5 @@ for index, item in enumerate(items):
     mccs.append(matthews_corrcoef(y_true=y_test, y_pred=predictions))
     last_epochs.append(len(history.history['loss']))
 
-print_to_file(dicts, mccs, items, epochs, batch_size, learning_rate, patience, last_epochs, 'dnn')
+print_to_file(dicts, mccs, items, epochs, batch_size, learning_rate, patience, last_epochs, model, 'dnn')
 make_graphs(histories, items, 'dnn')
