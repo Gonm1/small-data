@@ -16,7 +16,7 @@ import sys
 from mnistloader import load_mnist, mnist_preprocess
 from utils import make_graphs, print_to_file
 
-VERBOSE = 1
+VERBOSE = 0
 if not VERBOSE: print("Change verbose to 1 to see messages.")
 
 last_epochs = list()
@@ -24,6 +24,7 @@ mccs = list()
 dicts = list()
 histories = list()
 items = [10, 50, 250, 500]
+patiences = [5, 8, 6, 5]
 for index, item in enumerate(items):
 
     # Load the dataset
@@ -50,7 +51,7 @@ for index, item in enumerate(items):
     epochs = 60
     batch_size = 32
     learning_rate = 0.001
-    patience = 5
+    patience = patiences[index]
     num_classes = y_test.shape[1]
     # build model
     model = Sequential()
@@ -81,5 +82,5 @@ for index, item in enumerate(items):
     mccs.append(matthews_corrcoef(y_true=y_test, y_pred=predictions))
     last_epochs.append(len(history.history['loss']))
 
-print_to_file(dicts, mccs, items, epochs, batch_size, learning_rate, patience, last_epochs, model, 'dconv')
+print_to_file(dicts, mccs, items, epochs, batch_size, learning_rate, patiences, last_epochs, model, 'dconv')
 make_graphs(histories, items, 'dconv')

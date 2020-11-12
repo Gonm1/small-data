@@ -24,6 +24,7 @@ mccs = list()
 dicts = list()
 histories = list()
 items = [10, 50, 250, 500]
+patiences = [10, 8, 7, 7]
 for index, item in enumerate(items):
 
     # Load the dataset
@@ -50,7 +51,7 @@ for index, item in enumerate(items):
     epochs = 80
     batch_size = 32
     learning_rate = 0.001
-    patience = 10
+    patience = patiences[index]
     num_classes = y_test.shape[1]
     # build model
     model = Sequential()
@@ -81,5 +82,5 @@ for index, item in enumerate(items):
     mccs.append(matthews_corrcoef(y_true=y_test, y_pred=predictions))
     last_epochs.append(len(history.history['loss']))
 
-print_to_file(dicts, mccs, items, epochs, batch_size, learning_rate, patience, last_epochs, model, 'dnn')
+print_to_file(dicts, mccs, items, epochs, batch_size, learning_rate, patiences, last_epochs, model, 'dnn')
 make_graphs(histories, items, 'dnn')

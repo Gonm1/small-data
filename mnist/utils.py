@@ -19,18 +19,18 @@ def make_graphs(histories, items, prefix=''):
     pyplot.savefig(f"results/{prefix}-metrics.pdf")
     pyplot.close()
 
-def print_to_file(dictionaries, mccs, items, epochs, batch_size, learning_rate, patience, last_epochs, model, prefix=''):
+def print_to_file(dictionaries, mccs, items, epochs, batch_size, learning_rate, patiences, last_epochs, model, prefix=''):
     import sys
     from pandas import DataFrame
     original_stdout = sys.stdout
     with open(f'results/{prefix}.txt', 'w') as f:
         sys.stdout = f
         print(model.summary())
-        print(f'batch size: {batch_size}\tlearning rate: {learning_rate}\tpatience: {patience}\tmax epochs: {epochs}')
+        print(f'batch size: {batch_size}\tlearning rate: {learning_rate}\tmax epochs: {epochs}')
         print()
         for index, dictionary in enumerate(dictionaries):
             print()
-            print("items/class: ", items[index])
+            print(f"items/class:  {items[index]}  patience:  {patiences[index]}")
             dataFrame = DataFrame.from_dict(dictionary).T.round(3)
             dataFrame['support'] = dataFrame['support'].astype(int)
             dataFrame.loc['accuracy', 'support'] = 10000
