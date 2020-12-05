@@ -14,13 +14,13 @@ import random
 import sys
 
 from mnistloader import load_mnist, mnist_preprocess
-from utils import make_graphs
+from utils import make_graphs, print_to_file
 
-GLOBAL_EPOCHS = 110
+GLOBAL_EPOCHS = 350
 
 def scheduler(epoch, lr):
-    lrmin = 0.00001
-    lrmax = 0.001
+    lrmin = 0.0001
+    lrmax = 0.0035
     step_size = 10
     max_iter = GLOBAL_EPOCHS
     delta = 10
@@ -31,11 +31,26 @@ def scheduler(epoch, lr):
 VERBOSE = 1
 if not VERBOSE: print("Change verbose to 1 to see messages.")
 
-mtcc = list()
+last_epochs = list()
+mccs = list()
 dicts = list()
 histories = list()
+
 items = [10, 50, 250, 500]
+patiences = [50, 10, 8, 6]
+batch_size = [20, 64, 128, 128]
 for index, item in enumerate(items):
+
+    # Load the dataset
+    x_train, y_train, x_test, y_test = load_mnist(items_per_class=item) # 10 items per class means a dataset size of 100
+    if VERBOSE: print("Shape after loading: ", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
+
+    # Pre process images
+    x_train, y_train, x_test, y_test = mnist_preprocess(x_train, y_train, x_test, y_test)
+    if VERBOSE: print("Shape after pre processing: ", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
+    
+    if VERBOSE: print(f"Training set size: {len(x_train)}")
+    if VERBOSE: print(f"Test set size: {len(x_test)}", end='\n\n')
 
     seed_value = 0
     # 1. Set the `PYTHONHASHSEED` environment variable at a fixed value
@@ -47,43 +62,36 @@ for index, item in enumerate(items):
     # 4. Set the `tensorflow` pseudo-random generator at a fixed value
     tf.random.set_seed(seed_value)
 
-    # Load the dataset
-    x_train, y_train, x_test, y_test = load_mnist(items_per_class=item, seed=seed_value) # 10 items per class means a dataset size of 100
-    if VERBOSE: print("Shape after loading: ", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
-
-    # Pre process images
-    x_train, y_train, x_test, y_test = mnist_preprocess(x_train, y_train, x_test, y_test)
-    if VERBOSE: print("Shape after pre processing: ", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
-    
-    if VERBOSE: print(f"Training set size: {len(x_train)}")
-    if VERBOSE: print(f"Test set size: {len(x_test)}", end='\n\n')
-
     epochs = GLOBAL_EPOCHS
-    batch_size = 32
     learning_rate = 0.001
+    patience = patiences[index]
     num_classes = y_test.shape[1]
     # build model
     model = Sequential()
     model.add(Conv2D(filters=64, kernel_size=(7,7), input_shape=(28, 28, 1), activation='relu', padding='same', dilation_rate=2))
+    model.add(BatchNormalization())
     model.add(MaxPooling2D(pool_size=(4,4), padding='same'))
     model.add(Conv2D(filters=128, kernel_size=(5,5), activation='relu', padding='same', dilation_rate=2))
+    model.add(Dropout(0.1))
     model.add(Conv2D(filters=64, kernel_size=(5,5), activation='relu', padding='same', dilation_rate=2))
+    model.add(Dropout(0.1))
     model.add(Conv2D(filters=64, kernel_size=(5,5), activation='relu', padding='same', dilation_rate=2))
+    model.add(Dropout(0.1))
     model.add(Conv2D(filters=32, kernel_size=(7,7), activation='relu', padding='same', dilation_rate=2))
+    model.add(Dropout(0.1))
     model.add(Conv2D(filters=128, kernel_size=(5,5), activation='relu', padding='same', dilation_rate=2))
-    model.add(Flatten())
-    model.add(Dropout(0.25))
-    model.add(Dense(units=128, activation='relu'))
-    model.add(BatchNormalization())
-    model.add(Dropout(0.50))
-    model.add(Dense(units=64, activation='relu'))
+    model.add(GlobalAveragePooling2D())
+    model.add(Dropout(0.5))
+    model.add(Dense(units=32, activation='relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(units=32, activation='relu'))
     model.add(Dense(num_classes, activation='softmax'))
     
     model.compile(loss=CosineSimilarity(axis=1), optimizer=Adam(lr=learning_rate), metrics=[CategoricalAccuracy()])
 
     if VERBOSE: model.summary()
-    earlyStop = EarlyStopping(monitor='val_loss', mode='min', patience=15, verbose=VERBOSE)
-    history = model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=epochs, batch_size=batch_size, verbose=VERBOSE, callbacks=[earlyStop, LearningRateScheduler(scheduler)])
+    earlyStop = EarlyStopping(monitor='val_loss', mode='min', patience=patience, verbose=VERBOSE)
+    history = model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=epochs, batch_size=batch_size[index], verbose=VERBOSE, callbacks=[earlyStop, LearningRateScheduler(scheduler)])
     histories.append(history)
 
     predictions = model.predict(x_test)
@@ -91,26 +99,8 @@ for index, item in enumerate(items):
     predictions = np.argmax(predictions, axis=1)
     
     dicts.append(classification_report(y_true=y_test, y_pred=predictions, digits=3, output_dict=True))
-    mtcc.append(matthews_corrcoef(y_true=y_test, y_pred=predictions))
+    mccs.append(matthews_corrcoef(y_true=y_test, y_pred=predictions))
+    last_epochs.append(len(history.history['loss']))
 
-original_stdout = sys.stdout
-with open('results/combined.txt', 'w') as f:
-    sys.stdout = f
-    print(f'epochs: {epochs}')
-    print(f'batch size: {batch_size}')
-    print(f'learning rate: {learning_rate}')
-    print()
-    for index, dictt in enumerate(dicts):
-        print()
-        print("items/class: ", items[index])
-        df = DataFrame.from_dict(dictt).T.round(3)
-        df['support'] = df['support'].astype(int)
-        df.loc['accuracy', 'support'] = 10000
-        df.loc['accuracy','recall'] = '-'
-        df.loc['accuracy','precision'] = '-'
-        print(df)
-        print("mcc: ", mtcc[index])
-        print()
-    sys.stdout = original_stdout
-
+print_to_file(dicts, mccs, items, epochs, batch_size[0], learning_rate, patiences, last_epochs, model, 'combined')
 make_graphs(histories, items, 'combined')
