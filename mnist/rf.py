@@ -1,7 +1,7 @@
 from sklearn.metrics import classification_report, matthews_corrcoef
 from mnistloader import load_mnist, mnist_preprocess
 from pandas import DataFrame
-from sklearn import svm
+from sklearn.ensemble import RandomForestClassifier
 import tensorflow as tf
 import numpy as np
 import random
@@ -48,7 +48,7 @@ for item in items:
     tf.random.set_seed(seed_value)
 
     # Model definition
-    clf = svm.SVC(C=5.0, kernel='rbf', degree=3, gamma='scale', coef0=0.0, shrinking=True, probability=False, tol=1e-3, cache_size=200, class_weight=None, verbose=False, max_iter=-1, decision_function_shape='ovr', break_ties=False, random_state=None)
+    clf = clf = RandomForestClassifier(n_jobs=3,n_estimators=3000, criterion='gini', min_samples_split=2, max_depth=10, random_state=seed_value)
 
     if VERBOSE: print("Training")
     # Model training
@@ -63,7 +63,7 @@ for item in items:
     mccs.append(matthews_corrcoef(y_true=y_test, y_pred=predictions))
 
 original_stdout = sys.stdout
-with open(f'results/svm.txt', 'w') as f:
+with open(f'results/rf.txt', 'w') as f:
     sys.stdout = f
     for index, dictionary in enumerate(dicts):
         print()
