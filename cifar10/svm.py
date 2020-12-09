@@ -1,47 +1,41 @@
-from sklearn import svm, metrics
+from sklearn.metrics import classification_report, matthews_corrcoef
+from utils import load_cifar, cifar_preprocess
+from pandas import DataFrame
+from sklearn import svm
+import tensorflow as tf
 import numpy as np
+import random
+import sys
+import os
 
-def svm_f(x_train, y_train, x_test, y_test, verb=0):
+mccs = list()
+dicts = list()
+VERBOSE = 1
+items = [10, 50, 250, 500]
+for item in items:
+
+    # Load the dataset
+    x_train, y_train, x_test, y_test = load_cifar(items_per_class=item) # 10 items per class means a dataset size of 100
+    if VERBOSE: print("Shape after loading: ", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
+
+    # Pre process images
+    x_train, y_train, x_test, y_test = cifar_preprocess(x_train, y_train, x_test, y_test)
+    if VERBOSE: print("Shape after pre processing: ", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
+
+    if VERBOSE: print(f"Training set size: {len(x_train)}")
+    if VERBOSE: print(f"Test set size: {len(x_test)}")
+
     # Reshape to vector form
     x_train = x_train.reshape(len(x_train), 32*32)
     x_test = x_test.reshape(len(x_test), 32*32)
-    print("Shape after converting to vector", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
+    if VERBOSE: print("Shape after converting to vector", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
 
     # Revert categorical arrays on labels
     y_train = [np.argmax(label) for label in y_train]
     y_test = [np.argmax(label) for label in y_test]
     y_train = np.asarray(y_train)
     y_test = np.asarray(y_test)
-    print("Shape after converting labels: ", y_train.shape, y_train.shape)
-
-    # Model definition
-    clf = svm.SVC()
-
-    # Model training
-    clf.fit(x_train, y_train)
-    print("Trainig complete.")
-
-    # Model testing
-    predictions = clf.predict(x_test)
-
-    accuracy = metrics.accuracy_score(y_true=y_test, y_pred=predictions)
-
-    # The precision is intuitively the ability of the classifier not to label as positive a sample that is negative.
-    precision = metrics.precision_score(y_true=y_test, y_pred=predictions, average='micro')
-
-    recall = metrics.recall_score(y_true=y_test, y_pred=predictions, average='micro')
-
-    f1 = metrics.f1_score(y_true=y_test, y_pred=predictions, average='micro')
-
-    return f"val_accuracy: {round(accuracy,4)}\nval_precision: {round(precision,4)}\nval_recall{round(recall,4)}\nval_f1: {round(f1,4)}\n"
-
-
-if __name__ == "__main__":
-    from cifarloader import load_cifar, cifar_preprocess
-    import tensorflow as tf
-    import numpy as np
-    import random
-    import os
+    if VERBOSE: print("Shape after converting labels: ", y_train.shape, y_train.shape)
 
     seed_value = 0
     # 1. Set the `PYTHONHASHSEED` environment variable at a fixed value
@@ -53,15 +47,34 @@ if __name__ == "__main__":
     # 4. Set the `tensorflow` pseudo-random generator at a fixed value
     tf.random.set_seed(seed_value)
 
-    # Load the dataset
-    x_train, y_train, x_test, y_test = load_cifar()
-    print("Shape after loading: ", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
+    # Model definition
+    clf = svm.SVC(C=0.01, kernel='rbf', degree=15, gamma='scale', coef0=0.0, shrinking=True, probability=False, tol=1e-3, cache_size=200, class_weight=None, verbose=False, max_iter=-1, decision_function_shape='ovr', break_ties=False, random_state=seed_value)
 
-    # Pre process images
-    x_train, y_train, x_test, y_test = cifar_preprocess(x_train, y_train, x_test, y_test)
-    print("Shape after pre processing: ", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
+    if VERBOSE: print("Training")
+    # Model training
+    clf.fit(x_train, y_train)
 
-    print(f"Training set size: {len(x_train)}")
-    print(f"Test set size: {len(x_test)}", end='\n\n')
+    # Model testing
+    predictions = clf.predict(x_test)
 
-    print(svm_f(x_train, y_train, x_test, y_test))
+    if VERBOSE: print("Training complete", end='\n\n')
+
+    dicts.append(classification_report(y_true=y_test, y_pred=predictions, digits=3, output_dict=True))
+    mccs.append(matthews_corrcoef(y_true=y_test, y_pred=predictions))
+
+original_stdout = sys.stdout
+with open(f'results/svm.txt', 'w') as f:
+    sys.stdout = f
+    for index, dictionary in enumerate(dicts):
+        print()
+        print("items/class: ", items[index])
+        dataFrame = DataFrame.from_dict(dictionary).T.round(3)
+        dataFrame['support'] = dataFrame['support'].astype(int)
+        dataFrame.loc['accuracy', 'support'] = 10000
+        dataFrame.loc['accuracy','recall'] = '-'
+        dataFrame.loc['accuracy','precision'] = '-'
+        print(dataFrame)
+        print("mcc: ", round(mccs[index],3))
+        print()
+sys.stdout = original_stdout
+f.close()
