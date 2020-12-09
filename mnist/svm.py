@@ -48,7 +48,7 @@ for item in items:
     tf.random.set_seed(seed_value)
 
     # Model definition
-    clf = svm.SVC(C=5.0, kernel='rbf', degree=3, gamma='scale', coef0=0.0, shrinking=True, probability=False, tol=1e-3, cache_size=200, class_weight=None, verbose=False, max_iter=-1, decision_function_shape='ovr', break_ties=False, random_state=None)
+    clf = svm.SVC(C=5.0, kernel='rbf', degree=3, gamma='scale', coef0=0.0, shrinking=True, probability=False, tol=1e-3, cache_size=200, class_weight=None, verbose=False, max_iter=-1, decision_function_shape='ovr', break_ties=False, random_state=seed_value)
 
     if VERBOSE: print("Training")
     # Model training
