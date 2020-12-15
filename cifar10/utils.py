@@ -33,7 +33,7 @@ def print_to_file(dictionaries, mccs, items, epochs, batch_size, learning_rate, 
     import sys
     from pandas import DataFrame
     original_stdout = sys.stdout
-    with open(f'results/{prefix}.txt', 'w') as f:
+    with open(f'results/{prefix}.txt', 'a') as f:
         sys.stdout = f
         print(model.summary())
         print(f'batch size: {batch_size}\tlearning rate: {learning_rate}\tmax epochs: {epochs}')
