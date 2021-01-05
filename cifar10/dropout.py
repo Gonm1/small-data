@@ -25,7 +25,7 @@ dicts = list()
 histories = list()
 items = [10, 50, 250, 500]
 patiences = [180, 100, 60, 40]
-batch_sizes = [20, 32, 32, 32]
+batch_sizes = [20, 20, 32, 32]
 for index, item in enumerate(items):
 
     # Load the dataset
@@ -49,8 +49,8 @@ for index, item in enumerate(items):
     # 4. Set the `tensorflow` pseudo-random generator at a fixed value
     tf.random.set_seed(seed_value)
 
-    epochs = 300
-    learning_rate = 0.001
+    epochs = 250
+    learning_rate = 0.00005
     patience = patiences[index]
     num_classes = y_test.shape[1]
     # build model
@@ -63,8 +63,9 @@ for index, item in enumerate(items):
     model.add(Flatten())
     model.add(Dropout(0.25))
     model.add(Dense(48, activation='relu'))
-    model.add(Dropout(0.5))
+    model.add(Dropout(0.25))
     model.add(Dense(32, activation='relu'))
+    model.add(Dropout(0.1))
     model.add(Dense(num_classes, activation='softmax'))
     
     model.compile(loss=CategoricalCrossentropy(), optimizer=Adam(lr=learning_rate), metrics=[CategoricalAccuracy()])

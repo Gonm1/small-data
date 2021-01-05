@@ -32,6 +32,7 @@ def make_graphs(histories, items, prefix=''):
 def print_to_file(dictionaries, mccs, items, epochs, batch_size, learning_rate, patiences, last_epochs, model, prefix=''):
     import sys
     from pandas import DataFrame
+    import datetime
     original_stdout = sys.stdout
     with open(f'results/{prefix}.txt', 'a') as f:
         sys.stdout = f
@@ -49,6 +50,7 @@ def print_to_file(dictionaries, mccs, items, epochs, batch_size, learning_rate, 
             print(dataFrame)
             print("mcc: ", round(mccs[index],3))
             print(f'last epoch:  {last_epochs[index]}')
+            print(datetime.datetime.now())
             print()
     sys.stdout = original_stdout
     f.close()

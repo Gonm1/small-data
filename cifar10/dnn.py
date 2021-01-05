@@ -61,19 +61,16 @@ for index, item in enumerate(items):
     tf.random.set_seed(seed_value)
 
     epochs = 80
-    learning_rate = 0.001
+    learning_rate = 0.00005
     patience = patiences[index]
     num_classes = y_test.shape[1]
     # build model
     model = Sequential()
     model.add(Conv2D(filters=128, kernel_size=(7, 7), input_shape=(32, 32, 1), activation='relu', padding='same'))
     model.add(MaxPooling2D(pool_size=(4, 4)))
-    model.add(Conv2D(filters=128, kernel_size=(
-        7, 7), activation='relu', padding='same'))
-    model.add(Conv2D(filters=64, kernel_size=(7, 7),
-                     activation='relu', padding='same'))
-    model.add(Conv2D(filters=64, kernel_size=(7, 7),
-                     activation='relu', padding='same'))
+    model.add(Conv2D(filters=128, kernel_size=(7, 7), activation='relu', padding='same'))
+    model.add(Conv2D(filters=64, kernel_size=(7, 7), activation='relu', padding='same'))
+    model.add(Conv2D(filters=64, kernel_size=(7, 7), activation='relu', padding='same'))
     model.add(Flatten())
     model.add(Dense(48, activation='relu'))
     model.add(Dense(32, activation='relu'))
@@ -95,7 +92,7 @@ for index, item in enumerate(items):
                     epochs=epochs,
                     batch_size=batch_sizes[index], verbose=VERBOSE,
                     callbacks=[earlyStop],
-                    validation_batch_size=5000)
+                    validation_batch_size=10_000)
     histories.append(history)
 
     predictions = model.predict(x_test)

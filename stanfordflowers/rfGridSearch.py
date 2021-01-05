@@ -1,18 +1,16 @@
 from sklearn.metrics import classification_report, matthews_corrcoef
 from utils import load_flowers, flowers_preprocess
 from pandas import DataFrame
-from sklearn import svm
+from sklearn.ensemble import RandomForestClassifier
 import tensorflow as tf
 import numpy as np
 import random
 import sys
 import os
 
-mccs = list()
-dicts = list()
 VERBOSE = 1
 items = [10]
-for index, item in enumerate(items):
+for item in items:
 
     # Load the dataset
     x_train, y_train, x_test, y_test = load_flowers() # 10 items per class means a dataset size of 100
@@ -47,36 +45,25 @@ for index, item in enumerate(items):
     # 4. Set the `tensorflow` pseudo-random generator at a fixed value
     tf.random.set_seed(seed_value)
 
-    # Model definition
-    parameters = {'C': 2, 'degree': 1, 'kernel': 'rbf', 'random_state': seed_value}
+    from sklearn.model_selection import GridSearchCV 
 
-    clf = svm.SVC(**parameters)
+    param_grid = {'criterion' : ['gini', 'entropy'],
+                'min_samples_split' : [2,3,4,5,6],
+                'min_samples_leaf': [1,2,3,5,7],
+                'n_estimators' : [1,5,25,50,100,250,500, 2500, 5000],
+                'random_state': [seed_value]}
 
-    if VERBOSE: print("Training")
-    # Model training
-    clf.fit(x_train, y_train)
+    grid = GridSearchCV(RandomForestClassifier(), param_grid, verbose = VERBOSE, n_jobs=15) 
 
-    # Model testing
-    predictions = clf.predict(x_test)
+    # fitting the model for grid search 
+    grid.fit(x_train, y_train)
 
-    if VERBOSE: print("Training complete", end='\n\n')
+    print("Grid search finished")
 
-    dicts.append(classification_report(y_true=y_test, y_pred=predictions, digits=3, output_dict=True))
-    mccs.append(matthews_corrcoef(y_true=y_test, y_pred=predictions))
-
-original_stdout = sys.stdout
-with open(f'results/svm.txt', 'a') as f:
-    sys.stdout = f
-    for index, dictionary in enumerate(dicts):
-        print()
-        print("items/class: ", items[index])
-        dataFrame = DataFrame.from_dict(dictionary).T.round(3)
-        dataFrame['support'] = dataFrame['support'].astype(int)
-        dataFrame.loc['accuracy', 'support'] = 6149
-        dataFrame.loc['accuracy','recall'] = '-'
-        dataFrame.loc['accuracy','precision'] = '-'
-        print(dataFrame)
-        print("mcc: ", round(mccs[index],3))
-        print()
-sys.stdout = original_stdout
-f.close()
+    original_stdout = sys.stdout
+    with open(f'results/rfGridSearch.txt', 'a') as f:
+        sys.stdout = f
+        # print best parameter after tuning 
+        print(f"{item} - {grid.best_params_}") 
+    sys.stdout = original_stdout
+    f.close()

@@ -1,7 +1,7 @@
 from sklearn.metrics import classification_report, matthews_corrcoef
 from utils import load_flowers, flowers_preprocess
 from pandas import DataFrame
-from sklearn import svm
+from sklearn import tree
 import tensorflow as tf
 import numpy as np
 import random
@@ -47,10 +47,10 @@ for index, item in enumerate(items):
     # 4. Set the `tensorflow` pseudo-random generator at a fixed value
     tf.random.set_seed(seed_value)
 
+    parameters = {'criterion': 'entropy', 'max_depth': 10, 'min_samples_leaf': 1, 'min_samples_split': 3}
+    
     # Model definition
-    parameters = {'C': 2, 'degree': 1, 'kernel': 'rbf', 'random_state': seed_value}
-
-    clf = svm.SVC(**parameters)
+    clf = tree.DecisionTreeClassifier(**parameters)
 
     if VERBOSE: print("Training")
     # Model training
@@ -65,7 +65,7 @@ for index, item in enumerate(items):
     mccs.append(matthews_corrcoef(y_true=y_test, y_pred=predictions))
 
 original_stdout = sys.stdout
-with open(f'results/svm.txt', 'a') as f:
+with open(f'results/dt.txt', 'w') as f:
     sys.stdout = f
     for index, dictionary in enumerate(dicts):
         print()

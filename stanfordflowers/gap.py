@@ -11,7 +11,7 @@ from keras.callbacks import EarlyStopping
 from keras.losses import CategoricalCrossentropy
 from sklearn.metrics import classification_report, matthews_corrcoef
 from keras.metrics import CategoricalAccuracy
-from keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, Dropout
+from keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, GlobalAveragePooling2D
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # ignore tf warnings about cuda
 
@@ -27,8 +27,8 @@ mccs = list()
 dicts = list()
 histories = list()
 items = [10]
-patiences = [55]
-batch_sizes = [20]
+patiences = [155]
+batch_sizes = [32]
 for index, item in enumerate(items):
 
     # Load the dataset
@@ -53,8 +53,8 @@ for index, item in enumerate(items):
     # 4. Set the `tensorflow` pseudo-random generator at a fixed value
     tf.random.set_seed(seed_value)
 
-    epochs = 600
-    learning_rate = 0.0001
+    epochs = 300
+    learning_rate = 0.00001
     patience = patiences[index]
     num_classes = y_test.shape[1]
     # build model
@@ -64,12 +64,7 @@ for index, item in enumerate(items):
     model.add(Conv2D(filters=64, kernel_size=(5,5), input_shape=(32, 32, 1), activation='relu', padding='same'))
     model.add(Conv2D(filters=32, kernel_size=(3,3), input_shape=(32, 32, 1), activation='relu', padding='same'))
     model.add(MaxPooling2D(pool_size=(4,4)))
-    model.add(Flatten())
-    model.add(Dropout(0.5))
-    model.add(Dense(32, activation='relu'))
-    model.add(Dropout(0.5))
-    model.add(Dense(32, activation='relu'))
-    model.add(Dropout(0.5))
+    model.add(GlobalAveragePooling2D())
     model.add(Dense(num_classes, activation='softmax'))
 
     model.compile(
@@ -98,5 +93,5 @@ for index, item in enumerate(items):
     mccs.append(matthews_corrcoef(y_true=y_test, y_pred=predictions))
     last_epochs.append(len(history.history['loss']))
 
-print_to_file(dicts, mccs, items, epochs, batch_sizes, learning_rate, patiences, last_epochs, model, 'dropout')
-make_graphs(histories, items, 'dropout')
+print_to_file(dicts, mccs, items, epochs, batch_sizes, learning_rate, patiences, last_epochs, model, 'gap')
+make_graphs(histories, items, 'gap')

@@ -24,8 +24,8 @@ mccs = list()
 dicts = list()
 histories = list()
 items = [10, 50, 250, 500]
-patiences = [5, 30, 30, 30]
-batch_sizes = [24, 28, 32, 32]
+patiences = [15, 15, 15, 15]
+batch_sizes = [20, 28, 32, 32]
 for index, item in enumerate(items):
 
     # Load the dataset
@@ -50,7 +50,7 @@ for index, item in enumerate(items):
     tf.random.set_seed(seed_value)
 
     epochs = 80
-    learning_rate = 0.001
+    learning_rate = 0.00005
     patience = patiences[index]
     num_classes = y_test.shape[1]
     # build model
@@ -59,12 +59,10 @@ for index, item in enumerate(items):
     model.add(BatchNormalization())
     model.add(MaxPooling2D(pool_size=(4, 4)))
     model.add(Conv2D(filters=128, kernel_size=(7, 7), activation='relu', padding='same'))
-    model.add(BatchNormalization())
     model.add(Conv2D(filters=64, kernel_size=(7, 7), activation='relu', padding='same'))
     model.add(Conv2D(filters=64, kernel_size=(7, 7), activation='relu', padding='same'))
     model.add(Flatten())
     model.add(Dense(48, activation='relu'))
-    model.add(BatchNormalization())
     model.add(Dense(32, activation='relu'))
     model.add(Dense(num_classes, activation='softmax'))
     
@@ -84,4 +82,4 @@ for index, item in enumerate(items):
     last_epochs.append(len(history.history['loss']))
 
 print_to_file(dicts, mccs, items, epochs, batch_sizes, learning_rate, patiences, last_epochs, model, 'bnorm')
-make_graphs(histories, items, 'bnorm')
+make_graphs(histories, items, 'bnorm-2')

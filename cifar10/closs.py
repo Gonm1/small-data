@@ -50,7 +50,7 @@ for index, item in enumerate(items):
     tf.random.set_seed(seed_value)
 
     epochs = 80
-    learning_rate = 0.001
+    learning_rate = 0.00005
     patience = patiences[index]
     num_classes = y_test.shape[1]
     # build model
@@ -85,4 +85,4 @@ for index, item in enumerate(items):
     last_epochs.append(len(history.history['loss']))
 
 print_to_file(dicts, mccs, items, epochs, batch_sizes, learning_rate, patiences, last_epochs, model, 'closs')
-make_graphs(histories, items, 'closs')
+make_graphs(histories, items, 'closs-2')
