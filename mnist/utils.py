@@ -42,3 +42,11 @@ def print_to_file(dictionaries, mccs, items, epochs, batch_size, learning_rate, 
             print()
     sys.stdout = original_stdout
     f.close()
+
+
+def load_mnist_pickle(id):
+    import pickle
+    pickle_in = open(f"Dataset/MNIST-{id}.pickle", "rb")
+    x_train, y_train, x_test, y_test = pickle.load(pickle_in)
+    pickle_in.close()
+    return x_train, y_train, x_test, y_test

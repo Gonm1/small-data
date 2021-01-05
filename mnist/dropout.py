@@ -14,7 +14,7 @@ import random
 import sys
 
 from mnistloader import load_mnist, mnist_preprocess
-from utils import make_graphs, print_to_file
+from utils import make_graphs, print_to_file, load_mnist_pickle
 
 
 VERBOSE = 0
@@ -29,17 +29,10 @@ patiences = [15, 15, 15, 15]
 for index, item in enumerate(items):
     
     # Load the dataset
-    x_train, y_train, x_test, y_test = load_mnist(items_per_class=item) # 10 items per class means a dataset size of 100
+    x_train, y_train, x_test, y_test = load_mnist_pickle(id=item)
     if VERBOSE: print("Shape after loading: ", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
 
-    # Pre process images
-    x_train, y_train, x_test, y_test = mnist_preprocess(x_train, y_train, x_test, y_test)
-    if VERBOSE: print("Shape after pre processing: ", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
-    
-    if VERBOSE: print(f"Training set size: {len(x_train)}")
-    if VERBOSE: print(f"Test set size: {len(x_test)}", end='\n\n')
-
-    seed_value = 123456789
+    seed_value = 0
     # 1. Set the `PYTHONHASHSEED` environment variable at a fixed value
     os.environ['PYTHONHASHSEED']=str(seed_value)
     # 2. Set the `python` built-in pseudo-random generator at a fixed value

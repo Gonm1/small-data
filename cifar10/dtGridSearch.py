@@ -1,5 +1,5 @@
 from sklearn.metrics import classification_report, matthews_corrcoef
-from utils import load_cifar, cifar_preprocess
+from utils import load_cifar_pickle
 from pandas import DataFrame
 from sklearn import tree
 import tensorflow as tf
@@ -13,15 +13,8 @@ items = [10, 50, 250, 500]
 for item in items:
 
     # Load the dataset
-    x_train, y_train, x_test, y_test = load_cifar(items_per_class=item) # 10 items per class means a dataset size of 100
+    x_train, y_train, x_test, y_test = load_cifar_pickle(id=item)
     if VERBOSE: print("Shape after loading: ", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
-
-    # Pre process images
-    x_train, y_train, x_test, y_test = cifar_preprocess(x_train, y_train, x_test, y_test)
-    if VERBOSE: print("Shape after pre processing: ", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
-
-    if VERBOSE: print(f"Training set size: {len(x_train)}")
-    if VERBOSE: print(f"Test set size: {len(x_test)}")
 
     # Reshape to vector form
     x_train = x_train.reshape(len(x_train), 32*32)

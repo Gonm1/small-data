@@ -13,7 +13,7 @@ import numpy as np
 import random
 import sys
 
-from utils import load_cifar, cifar_preprocess, print_to_file, make_graphs
+from utils import load_cifar_pickle, print_to_file, make_graphs
 from utils import make_graphs, print_to_file
 
 VERBOSE = 1
@@ -29,15 +29,8 @@ batch_sizes = [20, 28, 32, 48]
 for index, item in enumerate(items):
 
     # Load the dataset
-    x_train, y_train, x_test, y_test = load_cifar(items_per_class=item) # 10 items per class means a dataset size of 100
+    x_train, y_train, x_test, y_test = load_cifar_pickle(id=item)
     if VERBOSE: print("Shape after loading: ", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
-
-    # Pre process images
-    x_train, y_train, x_test, y_test = cifar_preprocess(x_train, y_train, x_test, y_test)
-    if VERBOSE: print("Shape after pre processing: ", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
-    
-    if VERBOSE: print(f"Training set size: {len(x_train)}")
-    if VERBOSE: print(f"Test set size: {len(x_test)}", end='\n\n')
 
     seed_value = 0
     # 1. Set the `PYTHONHASHSEED` environment variable at a fixed value
