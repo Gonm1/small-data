@@ -5,6 +5,7 @@
 /mnist/results/*.txt
 /cifar10/results/*.txt
 /oxfordflowers/results/*.txt
+*/results/*
 
 # pickle files
 *.pickle

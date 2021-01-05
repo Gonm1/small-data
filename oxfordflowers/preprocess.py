@@ -88,10 +88,8 @@ def flowers_preprocess(x_train, y_train, x_test, y_test, img_size=32):
 
 if __name__ == "__main__":
     import pickle
-    items = [10, 50, 250, 500]
-    for item in items:
-        x_train, y_train, x_test, y_test = load_flowers(items_per_class=item)
-        x_train, y_train, x_test, y_test = flowers_preprocess(x_train, y_train, x_test, y_test)
-        pickle_out = open(f"Dataset/Flowers-{item}.pickle", "wb")
-        pickle.dump((x_train, y_train, x_test, y_test), pickle_out)
-        pickle_out.close()
+    x_train, y_train, x_test, y_test = load_flowers()
+    x_train, y_train, x_test, y_test = flowers_preprocess(x_train, y_train, x_test, y_test)
+    pickle_out = open("Dataset/Flowers-10.pickle", "wb")
+    pickle.dump((x_train, y_train, x_test, y_test), pickle_out)
+    pickle_out.close()

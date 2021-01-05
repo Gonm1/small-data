@@ -44,3 +44,9 @@ def print_to_file(dictionaries, mccs, items, epochs, batch_size, learning_rate, 
     sys.stdout = original_stdout
     f.close()
 
+def load_flowers_pickle():
+    import pickle
+    pickle_in = open("Dataset/Flowers-10.pickle", "rb")
+    x_train, y_train, x_test, y_test = pickle.load(pickle_in)
+    pickle_in.close()
+    return x_train, y_train, x_test, y_test
