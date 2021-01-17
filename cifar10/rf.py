@@ -19,8 +19,8 @@ for index, item in enumerate(items):
     if VERBOSE: print("Shape after loading: ", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
 
     # Reshape to vector form
-    x_train = x_train.reshape(len(x_train), 32*32)
-    x_test = x_test.reshape(len(x_test), 32*32)
+    x_train = x_train.reshape(len(x_train), 32*32*3)
+    x_test = x_test.reshape(len(x_test), 32*32*3)
     if VERBOSE:
         print("Shape after converting to vector", x_train.shape,
               y_train.shape, x_test.shape, y_test.shape)

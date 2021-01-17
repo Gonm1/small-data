@@ -14,7 +14,7 @@ from keras.losses import CategoricalCrossentropy
 from sklearn.metrics import classification_report, matthews_corrcoef
 from keras.metrics import CategoricalAccuracy
 from keras.layers import Conv2D, MaxPooling2D, Dense, Flatten
-
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 tf.config.optimizer.set_jit(True)
 
@@ -71,14 +71,16 @@ for index, item in enumerate(items):
     earlyStop = EarlyStopping(
         monitor='val_loss', mode='min', patience=patience, verbose=VERBOSE)
 
-    history = model.fit(x_train, y_train, 
+    datagen = ImageDataGenerator(rotation_range=45, zoom_range=[0.85,1.0], horizontal_flip=True, fill_mode='reflect')
+    
+    history = model.fit(datagen.flow(x=x_train, y=y_train), 
                     validation_data=(x_test, y_test), 
                     epochs=epochs,
                     batch_size=batch_sizes[index], verbose=VERBOSE,
                     callbacks=[earlyStop],
-                    validation_batch_size=10_000)
+                    validation_batch_size=1000)
     histories.append(history)
-    model.save(f"models/dnn-{item}.h5")
+    model.save(f"models/da-{item}.h5")
 
     predictions = model.predict(x_test)
     y_test = np.argmax(y_test, axis=1)
@@ -90,5 +92,5 @@ for index, item in enumerate(items):
     last_epochs.append(len(history.history['loss']))
 
 print_to_file(dicts, mccs, items, epochs,
-              batch_sizes, learning_rate, patiences, last_epochs, model, 'dnn')
-make_graphs(histories, items, 'dnn')
+              batch_sizes, learning_rate, patiences, last_epochs, model, 'da')
+make_graphs(histories, items, 'da')

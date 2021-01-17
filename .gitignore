@@ -7,6 +7,8 @@
 /oxfordflowers/results/*.txt
 */results/*
 
+*/models/*
+
 # pickle files
 *.pickle
 

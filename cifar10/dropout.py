@@ -48,7 +48,7 @@ for index, item in enumerate(items):
     num_classes = y_test.shape[1]
     # build model
     model = Sequential()
-    model.add(Conv2D(filters=128, kernel_size=(7, 7), input_shape=(32, 32, 1), activation='relu', padding='same'))
+    model.add(Conv2D(filters=128, kernel_size=(7, 7), input_shape=(32, 32, 3), activation='relu', padding='same'))
     model.add(MaxPooling2D(pool_size=(4, 4)))
     model.add(Conv2D(filters=128, kernel_size=(7, 7), activation='relu', padding='same'))
     model.add(Conv2D(filters=64, kernel_size=(7, 7), activation='relu', padding='same'))
@@ -71,8 +71,9 @@ for index, item in enumerate(items):
                     epochs=epochs,
                     batch_size=batch_sizes[index], verbose=VERBOSE,
                     callbacks=[earlyStop],
-                    validation_batch_size=10_000)
+                    validation_batch_size=1_000)
     histories.append(history)
+    model.save(f"models/dropout-{item}.h5")
 
     predictions = model.predict(x_test)
     y_test = np.argmax(y_test, axis=1)

@@ -1,6 +1,7 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' # ignore tf warnings about cuda
-from keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, GlobalAveragePooling2D, BatchNormalization, Dropout
+from keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, GlobalAveragePooling2D, BatchNormalization, Dropout, Input, UpSampling2D
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from keras.metrics import CategoricalAccuracy
 from sklearn.metrics import classification_report, matthews_corrcoef
 from keras.losses import CosineSimilarity, CategoricalCrossentropy
@@ -19,8 +20,8 @@ from utils import make_graphs, print_to_file
 GLOBAL_EPOCHS = 350
 
 def scheduler(epoch, lr):
-    lrmin = 0.00005
-    lrmax = 0.00015
+    lrmin = 0.0005
+    lrmax = 0.001
     step_size = 20
     max_iter = GLOBAL_EPOCHS
     delta = 10
@@ -37,7 +38,7 @@ dicts = list()
 histories = list()
 
 items = [10, 50, 250, 500]
-patiences = [70, 60, 55, 50]
+patiences = [20, 20, 20, 20]
 batch_sizes = [20, 32, 32, 32]
 for index, item in enumerate(items):
 
@@ -54,28 +55,72 @@ for index, item in enumerate(items):
     np.random.seed(seed_value)
     # 4. Set the `tensorflow` pseudo-random generator at a fixed value
     tf.random.set_seed(seed_value)
-
+    
+    x_train *= 255
+    x_test *= 255
+    
     epochs = GLOBAL_EPOCHS
-    learning_rate = 0.00005
+    learning_rate = 0.0001
     patience = patiences[index]
     num_classes = y_test.shape[1]
     # build model
     model = Sequential()
-    model.add(Conv2D(filters=128, kernel_size=(7, 7), input_shape=(32, 32, 1), activation='relu', padding='same', dilation_rate=2))
-    model.add(BatchNormalization())
-    model.add(MaxPooling2D(pool_size=(4, 4)))
-    model.add(Conv2D(filters=128, kernel_size=(7, 7), activation='relu', padding='same', dilation_rate=2))
-    model.add(Conv2D(filters=64, kernel_size=(7, 7), activation='relu', padding='same', dilation_rate=2))
-    model.add(Conv2D(filters=64, kernel_size=(7, 7), activation='relu', padding='same', dilation_rate=2))
+    model.add(Input(shape=(32, 32, 3)))
+    model.add(UpSampling2D(size=(7,7), interpolation='nearest'))
+
+    transfer_learning_model = tf.keras.applications.EfficientNetB0(include_top=False, input_shape=(224, 224, 3), weights='imagenet')
+    for layer in transfer_learning_model.layers:
+        layer.trainable = False
+
+    model.add(transfer_learning_model)
     model.add(GlobalAveragePooling2D())
+    model.add(BatchNormalization())
+    model.add(Dense(units=512, activation='relu'))
+    model.add(Dropout(0.5))
+    model.add(BatchNormalization())
+    model.add(Dense(units=512, activation='relu'))
+    model.add(Dropout(0.5))
+    model.add(BatchNormalization())
+    model.add(Dense(units=512, activation='relu'))
+    model.add(Dropout(0.5))
+    model.add(BatchNormalization())
+    model.add(Dense(units=512, activation='relu'))
+    model.add(Dropout(0.5))
+    model.add(BatchNormalization())
+    model.add(Dense(units=512, activation='relu'))
+    model.add(Dropout(0.5))
+    model.add(BatchNormalization())
+    model.add(Dense(units=512, activation='relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(units=256, activation='relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(units=256, activation='relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(units=256, activation='relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(units=256, activation='relu'))
+    model.add(Dropout(0.5))
     model.add(Dense(num_classes, activation='softmax'))
     
     model.compile(loss=CosineSimilarity(axis=1), optimizer=Adam(lr=learning_rate), metrics=[CategoricalAccuracy()])
 
+    datagen = ImageDataGenerator(rotation_range=45, zoom_range=[0.85,1.0], horizontal_flip=True, fill_mode='reflect')
+
     if VERBOSE: model.summary()
+
     earlyStop = EarlyStopping(monitor='val_loss', mode='min', patience=patience, verbose=VERBOSE)
-    history = model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=epochs, batch_size=batch_sizes[index], verbose=VERBOSE, callbacks=[earlyStop, LearningRateScheduler(scheduler)], validation_batch_size=10_000)
+
+    history = model.fit(datagen.flow(x=x_train, y=y_train, batch_size=batch_sizes[index]),
+                        validation_data=(x_test, y_test), 
+                        epochs=epochs, 
+                        batch_size=batch_sizes[index], 
+                        verbose=VERBOSE, 
+                        callbacks=[earlyStop, LearningRateScheduler(scheduler)], 
+                        validation_batch_size=1000)
     histories.append(history)
+
+    model.save(f"models/combinedda-{item}.h5")
+
 
     predictions = model.predict(x_test)
     y_test = np.argmax(y_test, axis=1)
@@ -85,5 +130,5 @@ for index, item in enumerate(items):
     mccs.append(matthews_corrcoef(y_true=y_test, y_pred=predictions))
     last_epochs.append(len(history.history['loss']))
 
-print_to_file(dicts, mccs, items, epochs, batch_sizes, learning_rate, patiences, last_epochs, model, 'combinedgap')
-make_graphs(histories, items, 'combinedgap')
+print_to_file(dicts, mccs, items, epochs, batch_sizes, learning_rate, patiences, last_epochs, model, 'combinedgda')
+make_graphs(histories, items, 'combinedgda')

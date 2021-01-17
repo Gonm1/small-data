@@ -48,7 +48,7 @@ for index, item in enumerate(items):
     num_classes = y_test.shape[1]
     # build model
     model = Sequential()
-    model.add(Conv2D(filters=128, kernel_size=(7, 7), input_shape=(32, 32, 1), activation='relu', padding='same'))
+    model.add(Conv2D(filters=128, kernel_size=(7, 7), input_shape=(32, 32, 3), activation='relu', padding='same'))
     model.add(MaxPooling2D(pool_size=(4, 4)))
     model.add(Conv2D(filters=128, kernel_size=(
         7, 7), activation='relu', padding='same'))
@@ -66,8 +66,9 @@ for index, item in enumerate(items):
 
     if VERBOSE: model.summary()
     earlyStop = EarlyStopping(monitor='val_loss', mode='min', patience=patience, verbose=VERBOSE)
-    history = model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=epochs, batch_size=batch_sizes[index], verbose=VERBOSE, callbacks=[earlyStop], validation_batch_size=10_000)
+    history = model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=epochs, batch_size=batch_sizes[index], verbose=VERBOSE, callbacks=[earlyStop], validation_batch_size=1_000)
     histories.append(history)
+    model.save(f"models/closs-{item}.h5")
 
     predictions = model.predict(x_test)
     y_test = np.argmax(y_test, axis=1)
@@ -78,4 +79,4 @@ for index, item in enumerate(items):
     last_epochs.append(len(history.history['loss']))
 
 print_to_file(dicts, mccs, items, epochs, batch_sizes, learning_rate, patiences, last_epochs, model, 'closs')
-make_graphs(histories, items, 'closs-2')
+make_graphs(histories, items, 'closs')

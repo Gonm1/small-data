@@ -19,8 +19,8 @@ for item in items:
     if VERBOSE: print("Shape after loading: ", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
 
     # Reshape to vector form
-    x_train = x_train.reshape(len(x_train), 32*32)
-    x_test = x_test.reshape(len(x_test), 32*32)
+    x_train = x_train.reshape(len(x_train), 32*32*3)
+    x_test = x_test.reshape(len(x_test), 32*32*3)
     if VERBOSE: print("Shape after converting to vector", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
 
     # Revert categorical arrays on labels
@@ -46,8 +46,7 @@ for item in items:
                 'degree': [1,2,3,4,5], 
                 'kernel': ['rbf']} 
 
-    grid = GridSearchCV(svm.SVC(), param_grid, refit = True, verbose = 
-    VERBOSE, n_jobs=45) 
+    grid = GridSearchCV(svm.SVC(), param_grid, refit = True, verbose = VERBOSE, n_jobs=5) 
 
     # fitting the model for grid search 
     grid.fit(x_train, y_train)

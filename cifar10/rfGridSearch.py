@@ -17,8 +17,8 @@ for item in items:
     if VERBOSE: print("Shape after loading: ", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
 
     # Reshape to vector form
-    x_train = x_train.reshape(len(x_train), 32*32)
-    x_test = x_test.reshape(len(x_test), 32*32)
+    x_train = x_train.reshape(len(x_train), 32*32*3)
+    x_test = x_test.reshape(len(x_test), 32*32*3)
     if VERBOSE: print("Shape after converting to vector", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
 
     # Revert categorical arrays on labels
@@ -46,7 +46,7 @@ for item in items:
                 'n_estimators' : [1,5,25,50,100,250,500, 2500, 5000],
                 'random_state': [seed_value]}
 
-    grid = GridSearchCV(RandomForestClassifier(), param_grid, verbose = VERBOSE, n_jobs=-1) 
+    grid = GridSearchCV(RandomForestClassifier(), param_grid, verbose = VERBOSE, n_jobs=5) 
 
     # fitting the model for grid search 
     grid.fit(x_train, y_train)

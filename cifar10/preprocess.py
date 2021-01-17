@@ -110,35 +110,18 @@ def load_cifar(items_per_class=10):
 
 
 def cifar_preprocess(x_train, y_train, x_test, y_test):
-    '''
-    - Convert images from x_train and x_test into minmax normalized images.
-    - Convert y_train and y_test targets into one hot encoded arrays.
-    '''
-    # Pre-processing
-    x_train_grayscale = np.zeros(x_train.shape[:-1])
-    for i in range(x_train.shape[0]):
-        x_train_grayscale[i] = cv2.cvtColor(x_train[i], cv2.COLOR_BGR2GRAY)
-
-    x_test_grayscale = np.zeros(x_test.shape[:-1])
-    for i in range(x_test.shape[0]):
-        x_test_grayscale[i] = cv2.cvtColor(x_test[i], cv2.COLOR_BGR2GRAY)
-
     # Set pixel value to [0,1] (MinMax Normalization)
-    x_train_grayscale = x_train_grayscale.astype('float32')
-    x_train_grayscale /= 255.0
-    x_test_grayscale = x_test_grayscale.astype('float32')
-    x_test_grayscale /= 255.0
+    x_train = x_train.astype('float32')
+    x_train /= 255.0
+    x_test = x_test.astype('float32')
+    x_test /= 255.0
 
     # One hot encode outputs
     y_train = np_utils.to_categorical(y_train)
     y_test = np_utils.to_categorical(y_test)
 
-    x_train_grayscale = x_train_grayscale.reshape(
-        (len(x_train_grayscale), 32, 32, 1))
-    x_test_grayscale = x_test_grayscale.reshape(
-        (len(x_test_grayscale), 32, 32, 1))
-
-    return x_train_grayscale, y_train, x_test_grayscale, y_test
+    return x_train, y_train, x_test, y_test
+    
 
 
 if __name__ == "__main__":
