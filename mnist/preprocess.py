@@ -89,6 +89,7 @@ if __name__ == "__main__":
     for item in items:
         x_train, y_train, x_test, y_test = load_mnist(items_per_class=item)
         x_train, y_train, x_test, y_test = mnist_preprocess(x_train, y_train, x_test, y_test)
+        print(x_train.shape, y_train.shape, x_test.shape, y_test.shape)
         pickle_out = open(f"Dataset/MNIST-{item}.pickle", "wb")
         pickle.dump((x_train, y_train, x_test, y_test), pickle_out)
         pickle_out.close()

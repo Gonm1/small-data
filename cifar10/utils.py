@@ -40,8 +40,8 @@ def print_to_file(dictionaries, mccs, items, epochs, batch_size, learning_rate, 
             print(dataFrame)
             print("mcc: ", round(mccs[index],3))
             print(f'last epoch:  {last_epochs[index]}')
-            print(datetime.datetime.now())
             print()
+        print(datetime.datetime.now())
     sys.stdout = original_stdout
     f.close()
     

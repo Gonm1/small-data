@@ -1,13 +1,5 @@
-# .pdf generated in code folders
-/mnist/results/*.pdf
-/cifar10/results/*.pdf
-/oxfordflowers/results/*.pdf
-/mnist/results/*.txt
-/cifar10/results/*.txt
-/oxfordflowers/results/*.txt
-*/results/*
-
 */models/*
+cifar10/efficientnet-b0/*
 
 # pickle files
 *.pickle
