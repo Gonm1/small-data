@@ -1,4 +1,4 @@
-mnist/models/*
+
 cifar10/efficientnet-b0/*
 
 # pickle files
