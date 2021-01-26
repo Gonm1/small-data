@@ -13,7 +13,6 @@ import numpy as np
 import random
 import sys
 
-from mnistloader import load_mnist, mnist_preprocess
 from utils import make_graphs, print_to_file, load_mnist_pickle
 
 GLOBAL_EPOCHS = 50
@@ -85,6 +84,8 @@ for index, item in enumerate(items):
                         callbacks=[earlyStop,LearningRateScheduler(scheduler)])
 
     histories.append(history)
+
+    model.save(f"models/clr-{item}.h5")
 
     predictions = model.predict(x_test)
     y_test = np.argmax(y_test, axis=1)
