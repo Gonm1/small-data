@@ -25,4 +25,4 @@ python3 SVM.py
 
 2.- [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html)
 
-3.- [Stanford Flowers 102](http://www.robots.ox.ac.uk/~vgg/data/flowers/102/index.html)
+3.- [Fashion MNIST](https://github.com/zalandoresearch/fashion-mnist)
