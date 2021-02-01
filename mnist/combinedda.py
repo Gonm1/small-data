@@ -16,7 +16,7 @@ import sys
 
 from utils import make_graphs, print_to_file, load_mnist_pickle
 
-GLOBAL_EPOCHS = 200
+GLOBAL_EPOCHS = 350
 
 def scheduler(epoch, lr):
     lrmin = 0.00005
@@ -37,7 +37,7 @@ dicts = list()
 histories = list()
 
 items = [10, 50, 250, 500]
-patiences = [60, 40, 40, 40]
+patiences = [60, 40, 40, 30]
 batch_sizes = [20, 32, 32, 32]
 for index, item in enumerate(items):
 
@@ -86,14 +86,17 @@ for index, item in enumerate(items):
         layer.trainable = False
 
     model.add(transfer_learning_model)
+    model.add(Dropout(0.25))
     model.add(GlobalAveragePooling2D())
-    model.add(Dropout(0.25))
     model.add(Dense(units=512, activation='relu'))
     model.add(Dropout(0.25))
+    model.add(BatchNormalization())
     model.add(Dense(units=512, activation='relu'))
     model.add(Dropout(0.25))
+    model.add(BatchNormalization())
     model.add(Dense(units=256, activation='relu'))
     model.add(Dropout(0.25))
+    model.add(BatchNormalization())
     model.add(Dense(units=256, activation='relu'))
     model.add(Dropout(0.25))
     model.add(Dense(units=256, activation='relu'))
@@ -105,7 +108,7 @@ for index, item in enumerate(items):
 
     if VERBOSE: model.summary()
 
-    datagen = ImageDataGenerator(rotation_range=45, zoom_range=[0.85,1.0], horizontal_flip=False, fill_mode='reflect')
+    datagen = ImageDataGenerator(rotation_range=10, zoom_range=[0.85,1.0], horizontal_flip=False, fill_mode='reflect')
 
     earlyStop = EarlyStopping(monitor='val_loss', mode='min', patience=patience, verbose=VERBOSE)
 

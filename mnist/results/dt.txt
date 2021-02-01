@@ -14,7 +14,7 @@ items/class:  10
 accuracy             -      -     0.454    10000
 macro avg        0.441  0.448     0.440    10000
 weighted avg     0.445  0.454     0.444    10000
-mcc:  0.393
+mcc:  0.394
 
 
 items/class:  50
@@ -32,7 +32,7 @@ items/class:  50
 accuracy             -      -     0.605    10000
 macro avg        0.606    0.6     0.600    10000
 weighted avg      0.61  0.605     0.604    10000
-mcc:  0.561
+mcc:  0.562
 
 
 items/class:  250
@@ -50,7 +50,7 @@ items/class:  250
 accuracy             -      -     0.745    10000
 macro avg        0.743  0.742     0.741    10000
 weighted avg     0.745  0.745     0.744    10000
-mcc:  0.716
+mcc:  0.717
 
 
 items/class:  500
@@ -68,5 +68,5 @@ items/class:  500
 accuracy             -      -     0.777    10000
 macro avg        0.775  0.775     0.775    10000
 weighted avg     0.778  0.777     0.777    10000
-mcc:  0.752
+mcc:  0.753
 
