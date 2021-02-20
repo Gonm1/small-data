@@ -1,18 +1,19 @@
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' # ignore tf warnings about cuda
 from sklearn.metrics import classification_report, matthews_corrcoef
 from utils import load_fmnist_pickle
 from pandas import DataFrame
-from sklearn.tree import DecisionTreeClassifier
+from sklearn import tree 
 import tensorflow as tf
 import numpy as np
 import random
 import sys
-import os
 
 mccs = list()
 dicts = list()
 VERBOSE = 0
 items = [10, 50, 250, 500]
-for item in items:
+for index, item in enumerate(items):
 
     # Load the dataset
     x_train, y_train, x_test, y_test = load_fmnist_pickle(id=item)
@@ -40,8 +41,11 @@ for item in items:
     # 4. Set the `tensorflow` pseudo-random generator at a fixed value
     tf.random.set_seed(seed_value)
 
+    parameters = {'criterion': 'gini', 'max_depth': 6, 'min_samples_leaf': 3, 'min_samples_split': 4, 'random_state': seed_value}, {'criterion': 'entropy', 'max_depth': 4, 'min_samples_leaf': 3, 'min_samples_split': 3, 'random_state': seed_value}, {'criterion': 'entropy', 'max_depth': 8, 'min_samples_leaf': 7, 'min_samples_split': 2, 'random_state': seed_value}, {'criterion': 'entropy', 'max_depth': 10, 'min_samples_leaf': 2, 'min_samples_split': 5, 'random_state': seed_value}
+
+    
     # Model definition
-    clf = DecisionTreeClassifier(min_samples_split=2 ,max_depth=10, random_state=seed_value)
+    clf = tree.DecisionTreeClassifier(**parameters[index])
 
     if VERBOSE: print("Training")
     # Model training

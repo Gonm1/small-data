@@ -15,7 +15,7 @@ import sys
 
 from utils import make_graphs, print_to_file, load_mnist_pickle
 
-VERBOSE = 0
+VERBOSE = 1
 if not VERBOSE: print("Change verbose to 1 to see messages.")
 
 last_epochs = list()
@@ -23,7 +23,8 @@ mccs = list()
 dicts = list()
 histories = list()
 items = [10, 50, 250, 500]
-patiences = [10, 6, 7, 7]
+patiences = [10, 10, 7, 7]
+batch_sizes = [16, 24, 32, 32]
 for index, item in enumerate(items):
 
     # Load the dataset
@@ -41,7 +42,6 @@ for index, item in enumerate(items):
     tf.random.set_seed(seed_value)
 
     epochs = 60
-    batch_size = 16
     learning_rate = 0.004
     patience = patiences[index]
     num_classes = y_test.shape[1]
@@ -66,7 +66,7 @@ for index, item in enumerate(items):
 
     if VERBOSE: model.summary()
     earlyStop = EarlyStopping(monitor='val_loss', mode='min', patience=patience, verbose=VERBOSE)
-    history = model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=epochs, batch_size=batch_size, verbose=VERBOSE, callbacks=[earlyStop])
+    history = model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=epochs, batch_size=batch_sizes[index], verbose=VERBOSE, callbacks=[earlyStop], validation_batch_size=1000)
     histories.append(history)
 
     model.save(f"models/bnorm-{item}.h5")
@@ -79,5 +79,5 @@ for index, item in enumerate(items):
     mccs.append(matthews_corrcoef(y_true=y_test, y_pred=predictions))
     last_epochs.append(len(history.history['loss']))
 
-print_to_file(dicts, mccs, items, epochs, batch_size, learning_rate, patiences, last_epochs, model, 'bnorm')
+print_to_file(dicts, mccs, items, epochs, batch_sizes, learning_rate, patiences, last_epochs, model, 'bnorm')
 make_graphs(histories, items, 'bnorm')

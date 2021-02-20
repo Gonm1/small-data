@@ -16,7 +16,7 @@ import sys
 from utils import make_graphs, print_to_file, load_mnist_pickle
 
 
-VERBOSE = 0
+VERBOSE = 1
 if not VERBOSE: print("Change verbose to 1 to see messages.")
 
 last_epochs = list()
@@ -24,7 +24,8 @@ mccs = list()
 dicts = list()
 histories = list()
 items = [10, 50, 250, 500]
-patiences = [15, 15, 15, 15]
+patiences = [15, 10, 10, 5]
+batch_sizes = [20, 20, 20, 32]
 for index, item in enumerate(items):
     
     # Load the dataset
@@ -42,7 +43,6 @@ for index, item in enumerate(items):
     tf.random.set_seed(seed_value)
 
     epochs = 80
-    batch_size = 20
     learning_rate = 0.001
     patience = patiences[index]
     num_classes = y_test.shape[1]
@@ -67,7 +67,7 @@ for index, item in enumerate(items):
     if VERBOSE: model.summary()
 
     earlyStop = EarlyStopping(monitor='val_loss', mode='min', patience=patience, verbose=VERBOSE)
-    history = model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=epochs, batch_size=batch_size, verbose=VERBOSE, callbacks=[earlyStop])
+    history = model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=epochs, batch_size=batch_sizes[index], verbose=VERBOSE, callbacks=[earlyStop], validation_batch_size=2000)
     histories.append(history)
 
     model.save(f"models/dropout-{item}.h5")
@@ -80,5 +80,5 @@ for index, item in enumerate(items):
     mccs.append(matthews_corrcoef(y_true=y_test, y_pred=predictions))
     last_epochs.append(len(history.history['loss']))
 
-print_to_file(dicts, mccs, items, epochs, batch_size, learning_rate, patiences, last_epochs, model, 'dropout')
+print_to_file(dicts, mccs, items, epochs, batch_sizes, learning_rate, patiences, last_epochs, model, 'dropout')
 make_graphs(histories, items, 'dropout')

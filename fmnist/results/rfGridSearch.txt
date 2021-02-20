@@ -1,0 +1,5 @@
+
+10 - {'criterion': 'gini', 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 5000, 'random_state': 0}
+50 - {'criterion': 'gini', 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 250, 'random_state': 0}
+250 - {'criterion': 'entropy', 'min_samples_leaf': 2, 'min_samples_split': 2, 'n_estimators': 250, 'random_state': 0}
+500 - {'criterion': 'entropy', 'min_samples_leaf': 2, 'min_samples_split': 6, 'n_estimators': 250, 'random_state': 0}

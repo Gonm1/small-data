@@ -18,7 +18,7 @@ from utils import make_graphs, print_to_file, load_fmnist_pickle
 GLOBAL_EPOCHS = 350
 
 def scheduler(epoch, lr):
-    lrmin = 0.0001
+    lrmin = 0.00005
     lrmax = 0.0035
     step_size = 10
     max_iter = GLOBAL_EPOCHS
@@ -55,7 +55,7 @@ for index, item in enumerate(items):
     tf.random.set_seed(seed_value)
 
     epochs = GLOBAL_EPOCHS
-    learning_rate = 0.001
+    learning_rate = 0.00005
     patience = patiences[index]
     num_classes = y_test.shape[1]
     # build model
@@ -78,7 +78,7 @@ for index, item in enumerate(items):
     model.add(Dense(units=32, activation='relu'))
     model.add(Dense(num_classes, activation='softmax'))
     
-    model.compile(loss=CosineSimilarity(axis=1), optimizer=Adam(lr=learning_rate), metrics=[CategoricalAccuracy()])
+    model.compile(loss=CosineSimilarity(axis=1), optimizer=Adam(), metrics=[CategoricalAccuracy()])
 
     if VERBOSE: model.summary()
     earlyStop = EarlyStopping(monitor='val_loss', mode='min', patience=patience, verbose=VERBOSE)

@@ -43,7 +43,7 @@ for index, item in enumerate(items):
     # 4. Set the `tensorflow` pseudo-random generator at a fixed value
     tf.random.set_seed(seed_value)
 
-    parameters = {'criterion': 'gini', 'min_samples_leaf': 3, 'min_samples_split': 2, 'n_estimators': 500, 'random_state': seed_value}, {'criterion': 'gini', 'min_samples_leaf': 2, 'min_samples_split': 6, 'n_estimators': 2500, 'random_state': seed_value}, {'criterion': 'gini', 'min_samples_leaf': 1, 'min_samples_split': 3, 'n_estimators': 500, 'random_state': seed_value}, {'criterion': 'gini', 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 5000, 'random_state': seed_value}
+    parameters =  {'criterion': 'entropy', 'min_samples_leaf': 1, 'min_samples_split': 4, 'n_estimators': 2500, 'random_state': seed_value}, {'criterion': 'gini', 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 250, 'random_state': seed_value}, {'criterion': 'gini', 'min_samples_leaf': 1, 'min_samples_split': 3, 'n_estimators': 500, 'random_state': seed_value}, {'criterion': 'gini', 'min_samples_leaf': 1, 'min_samples_split': 5, 'n_estimators': 2500, 'random_state': seed_value}
     
     # Model definition
     clf = RandomForestClassifier(**parameters[index])

@@ -1,3 +1,5 @@
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' # ignore tf warnings about cuda
 from sklearn.metrics import classification_report, matthews_corrcoef
 from utils import load_fmnist_pickle
 from pandas import DataFrame
@@ -6,13 +8,12 @@ import tensorflow as tf
 import numpy as np
 import random
 import sys
-import os
 
 mccs = list()
 dicts = list()
 VERBOSE = 0
 items = [10, 50, 250, 500]
-for item in items:
+for index, item in enumerate(items):
 
     # Load the dataset
     x_train, y_train, x_test, y_test = load_fmnist_pickle(id=item)
@@ -40,8 +41,10 @@ for item in items:
     # 4. Set the `tensorflow` pseudo-random generator at a fixed value
     tf.random.set_seed(seed_value)
 
+    parameters = {'criterion': 'gini', 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 5000, 'random_state': seed_value},{'criterion': 'gini', 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 250, 'random_state': seed_value},{'criterion': 'entropy', 'min_samples_leaf': 2, 'min_samples_split': 2, 'n_estimators': 250, 'random_state': seed_value},{'criterion': 'entropy', 'min_samples_leaf': 2, 'min_samples_split': 6, 'n_estimators': 250, 'random_state': seed_value}
+    
     # Model definition
-    clf = clf = RandomForestClassifier(n_jobs=3,n_estimators=3000, criterion='gini', min_samples_split=2, max_depth=10, random_state=seed_value)
+    clf = RandomForestClassifier(**parameters[index])
 
     if VERBOSE: print("Training")
     # Model training

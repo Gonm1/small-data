@@ -36,8 +36,8 @@ dicts = list()
 histories = list()
 
 items = [10, 50, 250, 500]
-patiences = [50, 10, 8, 6]
-batch_size = [20, 64, 128, 128]
+patiences = [90, 50, 48, 46]
+batch_size = [20, 32, 32, 32]
 for index, item in enumerate(items):
 
     # Load the dataset
@@ -64,26 +64,24 @@ for index, item in enumerate(items):
     model.add(BatchNormalization())
     model.add(MaxPooling2D(pool_size=(4,4), padding='same'))
     model.add(Conv2D(filters=128, kernel_size=(5,5), activation='relu', padding='same', dilation_rate=2))
-    model.add(Dropout(0.1))
     model.add(Conv2D(filters=64, kernel_size=(5,5), activation='relu', padding='same', dilation_rate=2))
-    model.add(Dropout(0.1))
     model.add(Conv2D(filters=64, kernel_size=(5,5), activation='relu', padding='same', dilation_rate=2))
-    model.add(Dropout(0.1))
     model.add(Conv2D(filters=32, kernel_size=(7,7), activation='relu', padding='same', dilation_rate=2))
-    model.add(Dropout(0.1))
     model.add(Conv2D(filters=128, kernel_size=(5,5), activation='relu', padding='same', dilation_rate=2))
     model.add(GlobalAveragePooling2D())
-    model.add(Dropout(0.5))
+    model.add(Dropout(0.25))
     model.add(Dense(units=32, activation='relu'))
-    model.add(Dropout(0.5))
+    model.add(BatchNormalization())
+    model.add(Dropout(0.25))
     model.add(Dense(units=32, activation='relu'))
+    model.add(Dropout(0.25))
     model.add(Dense(num_classes, activation='softmax'))
     
-    model.compile(loss=CosineSimilarity(axis=1), optimizer=Adam(lr=learning_rate), metrics=[CategoricalAccuracy()])
+    model.compile(loss=CosineSimilarity(axis=1), optimizer=Adam(learning_rate=learning_rate), metrics=[CategoricalAccuracy()])
 
     if VERBOSE: model.summary()
     earlyStop = EarlyStopping(monitor='val_loss', mode='min', patience=patience, verbose=VERBOSE)
-    history = model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=epochs, batch_size=batch_size[index], verbose=VERBOSE, callbacks=[earlyStop, LearningRateScheduler(scheduler)])
+    history = model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=epochs, batch_size=batch_size[index], verbose=VERBOSE, callbacks=[earlyStop, LearningRateScheduler(scheduler)], validation_batch_size=1000)
     histories.append(history)
 
     model.save(f"models/combined-{item}.h5")

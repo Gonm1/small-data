@@ -50,19 +50,16 @@ for index, item in enumerate(items):
     model = Sequential()
     model.add(Conv2D(filters=128, kernel_size=(7, 7), input_shape=(32, 32, 3), activation='relu', padding='same'))
     model.add(MaxPooling2D(pool_size=(4, 4)))
-    model.add(Conv2D(filters=128, kernel_size=(
-        7, 7), activation='relu', padding='same'))
-    model.add(Conv2D(filters=64, kernel_size=(7, 7),
-                     activation='relu', padding='same'))
-    model.add(Conv2D(filters=64, kernel_size=(7, 7),
-                     activation='relu', padding='same'))
+    model.add(Conv2D(filters=128, kernel_size=(7, 7), activation='relu', padding='same'))
+    model.add(Conv2D(filters=64, kernel_size=(7, 7), activation='relu', padding='same'))
+    model.add(Conv2D(filters=64, kernel_size=(7, 7), activation='relu', padding='same'))
     model.add(Flatten())
     model.add(Dense(48, activation='relu'))
     model.add(Dense(32, activation='relu'))
     model.add(Dense(num_classes, activation='softmax'))
 
     
-    model.compile(loss=CosineSimilarity(), optimizer=Adam(lr=learning_rate), metrics=[CategoricalAccuracy()])
+    model.compile(loss=CosineSimilarity(axis=1), optimizer=Adam(lr=learning_rate), metrics=[CategoricalAccuracy()])
 
     if VERBOSE: model.summary()
     earlyStop = EarlyStopping(monitor='val_loss', mode='min', patience=patience, verbose=VERBOSE)

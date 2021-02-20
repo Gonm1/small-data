@@ -16,7 +16,7 @@ import sys
 from utils import make_graphs, print_to_file, load_fmnist_pickle
 
 
-VERBOSE = 0
+VERBOSE = 1
 if not VERBOSE: print("Change verbose to 1 to see messages.")
 
 last_epochs = list()
@@ -24,7 +24,8 @@ mccs = list()
 dicts = list()
 histories = list()
 items = [10, 50, 250, 500]
-patiences = [15, 15, 15, 15]
+patiences = [20, 25, 25, 25]
+batch_sizes = [24, 32, 32, 32]
 for index, item in enumerate(items):
     
     # Load the dataset
@@ -41,25 +42,29 @@ for index, item in enumerate(items):
     # 4. Set the `tensorflow` pseudo-random generator at a fixed value
     tf.random.set_seed(seed_value)
 
-    epochs = 80
-    batch_size = 20
-    learning_rate = 0.001
+    epochs = 200
+    batch_size = batch_sizes[index]
+    learning_rate = 0.0001
     patience = patiences[index]
     num_classes = y_test.shape[1]
     # build model
     model = Sequential()
     model.add(Conv2D(filters=64, kernel_size=(7,7), input_shape=(28, 28, 1), activation='relu', padding='same'))
-    model.add(MaxPooling2D(pool_size=(4,4)))
+    model.add(MaxPooling2D(pool_size=(2,2), padding='same'))
     model.add(Conv2D(filters=128, kernel_size=(5,5), activation='relu', padding='same'))
+    model.add(MaxPooling2D(pool_size=(2,2), padding='same'))
     model.add(Conv2D(filters=64, kernel_size=(5,5), activation='relu', padding='same'))
     model.add(Conv2D(filters=64, kernel_size=(5,5), activation='relu', padding='same'))
-    model.add(Conv2D(filters=32, kernel_size=(7,7), activation='relu', padding='same'))
+    model.add(Conv2D(filters=128, kernel_size=(5,5), activation='relu', padding='same'))
     model.add(Conv2D(filters=128, kernel_size=(5,5), activation='relu', padding='same'))
     model.add(Flatten())
+    model.add(Dropout(0.5))
+    model.add(Dense(units = 64, activation='relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(units = 64, activation='relu'))
     model.add(Dropout(0.25))
-    model.add(Dense(128, activation='relu'))
-    model.add(Dropout(0.50))
-    model.add(Dense(64, activation='relu'))
+    model.add(Dense(units = 64, activation='relu'))
+    model.add(Dropout(0.25))
     model.add(Dense(num_classes, activation='softmax'))
 
     model.compile(loss=CategoricalCrossentropy(), optimizer=Adam(lr=learning_rate), metrics=[CategoricalAccuracy()])
@@ -67,7 +72,7 @@ for index, item in enumerate(items):
     if VERBOSE: model.summary()
 
     earlyStop = EarlyStopping(monitor='val_loss', mode='min', patience=patience, verbose=VERBOSE)
-    history = model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=epochs, batch_size=batch_size, verbose=VERBOSE, callbacks=[earlyStop])
+    history = model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=epochs, batch_size=batch_sizes[index], verbose=VERBOSE, callbacks=[earlyStop], validation_batch_size=2000)
     histories.append(history)
 
     model.save(f"models/dropout-{item}.h5")
@@ -80,5 +85,5 @@ for index, item in enumerate(items):
     mccs.append(matthews_corrcoef(y_true=y_test, y_pred=predictions))
     last_epochs.append(len(history.history['loss']))
 
-print_to_file(dicts, mccs, items, epochs, batch_size, learning_rate, patiences, last_epochs, model, 'dropout')
+print_to_file(dicts, mccs, items, epochs, batch_sizes, learning_rate, patiences, last_epochs, model, 'dropout')
 make_graphs(histories, items, 'dropout')

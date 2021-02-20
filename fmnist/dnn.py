@@ -23,7 +23,7 @@ mccs = list()
 dicts = list()
 histories = list()
 items = [10, 50, 250, 500]
-patiences = [20, 18, 17, 17]
+patiences = [50, 18, 17, 17]
 for index, item in enumerate(items):
 
     # Load the dataset
@@ -42,28 +42,30 @@ for index, item in enumerate(items):
 
     epochs = 80
     batch_size = 32
-    learning_rate = 0.001
+    learning_rate = 0.0005
     patience = patiences[index]
     num_classes = y_test.shape[1]
     # build model
     model = Sequential()
     model.add(Conv2D(filters=64, kernel_size=(7,7), input_shape=(28, 28, 1), activation='relu', padding='same'))
-    model.add(MaxPooling2D(pool_size=(4,4), padding='same'))
+    model.add(MaxPooling2D(pool_size=(2,2), padding='same'))
     model.add(Conv2D(filters=128, kernel_size=(5,5), activation='relu', padding='same'))
+    model.add(MaxPooling2D(pool_size=(2,2), padding='same'))
     model.add(Conv2D(filters=64, kernel_size=(5,5), activation='relu', padding='same'))
     model.add(Conv2D(filters=64, kernel_size=(5,5), activation='relu', padding='same'))
-    model.add(Conv2D(filters=32, kernel_size=(7,7), activation='relu', padding='same'))
+    model.add(Conv2D(filters=128, kernel_size=(5,5), activation='relu', padding='same'))
     model.add(Conv2D(filters=128, kernel_size=(5,5), activation='relu', padding='same'))
     model.add(Flatten())
-    model.add(Dense(units = 32, activation='relu'))
-    model.add(Dense(units = 32, activation='relu'))
+    model.add(Dense(units = 64, activation='relu'))
+    model.add(Dense(units = 64, activation='relu'))
+    model.add(Dense(units = 64, activation='relu'))
     model.add(Dense(num_classes, activation='softmax'))
     
-    model.compile(loss=CategoricalCrossentropy(), optimizer=Adam(lr=learning_rate), metrics=[CategoricalAccuracy()])
+    model.compile(loss=CategoricalCrossentropy(), optimizer=Adam(learning_rate=learning_rate), metrics=[CategoricalAccuracy()])
 
     if VERBOSE: model.summary()
     earlyStop = EarlyStopping(monitor='val_loss', mode='min', patience=patience, verbose=VERBOSE)
-    history = model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=epochs, batch_size=batch_size, verbose=VERBOSE, callbacks=[earlyStop])
+    history = model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=epochs, batch_size=batch_size, verbose=VERBOSE, callbacks=[earlyStop], validation_batch_size=1000)
     histories.append(history)
     
     model.save(f"models/dnn-{item}.h5")

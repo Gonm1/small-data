@@ -1,5 +1,5 @@
 from sklearn.metrics import classification_report, matthews_corrcoef
-from utils import load_cifar, cifar_preprocess
+from utils import load_cifar_pickle
 from pandas import DataFrame
 from sklearn import svm
 import tensorflow as tf
@@ -41,7 +41,8 @@ for index, item in enumerate(items):
     tf.random.set_seed(seed_value)
 
     # Model definition
-    parameters = {'C': 1, 'degree': 1, 'kernel': 'rbf', 'random_state': seed_value}, {'C': 2, 'degree': 1, 'kernel': 'rbf', 'random_state': seed_value}, {'C': 2, 'degree': 1, 'kernel': 'rbf', 'random_state': seed_value}, {'C': 2, 'degree': 1, 'kernel': 'rbf', 'random_state': seed_value}
+    parameters = {'C': 5, 'degree': 1, 'kernel': 'rbf', 'random_state': seed_value}, {'C': 5, 'degree': 1, 'kernel': 'rbf', 'random_state': seed_value}, {'C': 3, 'degree': 1, 'kernel': 'rbf', 'random_state': seed_value}, {'C': 3, 'degree': 1, 'kernel': 'rbf', 'random_state': seed_value}
+
 
     clf = svm.SVC(**parameters[index])
 
