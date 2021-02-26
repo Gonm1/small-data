@@ -16,11 +16,11 @@ import sys
 
 from utils import make_graphs, print_to_file, load_mnist_pickle
 
-GLOBAL_EPOCHS = 350
+GLOBAL_EPOCHS = 100
 
 def scheduler(epoch, lr):
-    lrmin = 0.00005
-    lrmax = 0.0035
+    lrmin=0.0001
+    lrmax=0.001
     step_size = 10
     max_iter = GLOBAL_EPOCHS
     delta = 10
@@ -37,8 +37,8 @@ dicts = list()
 histories = list()
 
 items = [10, 50, 250, 500]
-patiences = [60, 40, 40, 30]
-batch_sizes = [20, 32, 32, 32]
+patiences = [15, 15, 15, 10]
+batch_sizes = [24, 32, 32, 32]
 for index, item in enumerate(items):
 
     # Load the dataset
@@ -72,47 +72,34 @@ for index, item in enumerate(items):
     print(y_train.shape)
 
     epochs = GLOBAL_EPOCHS
-    learning_rate = 0.001
+    learning_rate = 0.0005
     patience = patiences[index]
     num_classes = y_test.shape[1]
     # build model
     model = Sequential()
     model.add(Input(shape=(28, 28, 3)))
-    model.add(UpSampling2D(size=(8,8), interpolation='nearest'))
+    model.add(UpSampling2D(size=(8,8), interpolation='bilinear'))
 
     # Load updated weights from official repository
     transfer_learning_model = tf.keras.applications.EfficientNetB0(include_top=False, input_shape=(224, 224, 3), weights='../cifar10/efficientnet-b0/efficientnetb0_notop.h5')
-    for layer in transfer_learning_model.layers:
+    for layer in transfer_learning_model.layers[:-6]:
         layer.trainable = False
 
     model.add(transfer_learning_model)
-    model.add(Dropout(0.25))
     model.add(GlobalAveragePooling2D())
-    model.add(Dense(units=512, activation='relu'))
-    model.add(Dropout(0.25))
     model.add(BatchNormalization())
-    model.add(Dense(units=512, activation='relu'))
-    model.add(Dropout(0.25))
-    model.add(BatchNormalization())
-    model.add(Dense(units=256, activation='relu'))
-    model.add(Dropout(0.25))
-    model.add(BatchNormalization())
-    model.add(Dense(units=256, activation='relu'))
-    model.add(Dropout(0.25))
-    model.add(Dense(units=256, activation='relu'))
-    model.add(Dropout(0.25))
-    model.add(Dense(units=256, activation='relu'))
+    model.add(Dropout(0.5))
     model.add(Dense(num_classes, activation='softmax'))
     
     model.compile(loss=CosineSimilarity(axis=1), optimizer=Adam(), metrics=[CategoricalAccuracy()])
 
     if VERBOSE: model.summary()
 
-    datagen = ImageDataGenerator(rotation_range=10, zoom_range=[0.85,1.0], horizontal_flip=False, fill_mode='reflect')
+    datagen = ImageDataGenerator(rotation_range=25, zoom_range=[0.85,1.0], horizontal_flip=False, width_shift_range=0.1, height_shift_range=0.1, fill_mode='nearest')
 
     earlyStop = EarlyStopping(monitor='val_loss', mode='min', patience=patience, verbose=VERBOSE)
 
-    history = model.fit(datagen.flow(x=x_train, y=y_train, batch_size=batch_sizes[index], seed=seed_value), validation_data=(x_test, y_test), epochs=epochs, batch_size=batch_sizes[index], verbose=VERBOSE, callbacks=[earlyStop, LearningRateScheduler(scheduler)])
+    history = model.fit(datagen.flow(x=x_train, y=y_train, batch_size=batch_sizes[index], seed=seed_value), validation_data=(x_test, y_test), epochs=epochs, batch_size=batch_sizes[index], verbose=VERBOSE, callbacks=[earlyStop, LearningRateScheduler(scheduler)], validation_batch_size=2500)
     histories.append(history)
 
     model.save(f"models/combinedda-{item}.h5")

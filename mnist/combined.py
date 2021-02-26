@@ -36,8 +36,8 @@ dicts = list()
 histories = list()
 
 items = [10, 50, 250, 500]
-patiences = [90, 50, 48, 46]
-batch_size = [20, 32, 32, 32]
+patiences = [40, 20, 15, 15]
+batch_sizes = [20, 48, 128, 128]
 for index, item in enumerate(items):
 
     # Load the dataset
@@ -69,19 +69,14 @@ for index, item in enumerate(items):
     model.add(Conv2D(filters=32, kernel_size=(7,7), activation='relu', padding='same', dilation_rate=2))
     model.add(Conv2D(filters=128, kernel_size=(5,5), activation='relu', padding='same', dilation_rate=2))
     model.add(GlobalAveragePooling2D())
-    model.add(Dropout(0.25))
-    model.add(Dense(units=32, activation='relu'))
-    model.add(BatchNormalization())
-    model.add(Dropout(0.25))
-    model.add(Dense(units=32, activation='relu'))
-    model.add(Dropout(0.25))
+    model.add(Dropout(0.1))
     model.add(Dense(num_classes, activation='softmax'))
     
     model.compile(loss=CosineSimilarity(axis=1), optimizer=Adam(learning_rate=learning_rate), metrics=[CategoricalAccuracy()])
 
     if VERBOSE: model.summary()
     earlyStop = EarlyStopping(monitor='val_loss', mode='min', patience=patience, verbose=VERBOSE)
-    history = model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=epochs, batch_size=batch_size[index], verbose=VERBOSE, callbacks=[earlyStop, LearningRateScheduler(scheduler)], validation_batch_size=1000)
+    history = model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=epochs, batch_size=batch_sizes[index], verbose=VERBOSE, callbacks=[earlyStop, LearningRateScheduler(scheduler)], validation_batch_size=1000)
     histories.append(history)
 
     model.save(f"models/combined-{item}.h5")
@@ -94,5 +89,5 @@ for index, item in enumerate(items):
     mccs.append(matthews_corrcoef(y_true=y_test, y_pred=predictions))
     last_epochs.append(len(history.history['loss']))
 
-print_to_file(dicts, mccs, items, epochs, batch_size[0], learning_rate, patiences, last_epochs, model, 'combined')
+print_to_file(dicts, mccs, items, epochs, batch_sizes, learning_rate, patiences, last_epochs, model, 'combined')
 make_graphs(histories, items, 'combined')
