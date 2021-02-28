@@ -14,6 +14,13 @@ and run:
 ```
 pip3 install -r requirements.txt
 ```
+####  Data preparation
+run preprocess.py to prepare the data for each program:
+```
+cd MNIST
+python3 preprocess.py
+```
+Then you can run the programs on MNIST.
 Example for running SVM on MNIST:
 ```
 cd MNIST
