@@ -56,14 +56,11 @@ for index, item in enumerate(items):
     model.add(Conv2D(filters=128, kernel_size=(5,5), activation='relu', padding='same'))
     model.add(Conv2D(filters=128, kernel_size=(5,5), activation='relu', padding='same'))
     model.add(GlobalAveragePooling2D())
-    model.add(Dense(units = 64, activation='relu'))
-    model.add(Dense(units = 64, activation='relu'))
-    model.add(Dense(units = 64, activation='relu'))
     model.add(Dense(num_classes, activation='softmax'))
     
     model.compile(loss=CategoricalCrossentropy(), optimizer=Adam(lr=learning_rate), metrics=[CategoricalAccuracy()])
 
-    #if VERBOSE: model.summary()
+    if VERBOSE: model.summary()
     earlyStop = EarlyStopping(monitor='val_loss', mode='min', patience=patience, verbose=VERBOSE)
     history = model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=epochs, batch_size=batch_sizes[index], verbose=VERBOSE, callbacks=[earlyStop], validation_batch_size=2000)
     histories.append(history)
