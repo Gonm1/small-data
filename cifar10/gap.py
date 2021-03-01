@@ -54,8 +54,6 @@ for index, item in enumerate(items):
     model.add(Conv2D(filters=64, kernel_size=(7, 7), activation='relu', padding='same'))
     model.add(Conv2D(filters=64, kernel_size=(7, 7), activation='relu', padding='same'))
     model.add(GlobalAveragePooling2D())
-    model.add(Dense(48, activation='relu'))
-    model.add(Dense(32, activation='relu'))
     model.add(Dense(num_classes, activation='softmax'))
     
     model.compile(loss=CategoricalCrossentropy(), optimizer=Adam(lr=learning_rate), metrics=[CategoricalAccuracy()])

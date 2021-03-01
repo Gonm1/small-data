@@ -19,11 +19,11 @@ from utils import make_graphs, print_to_file
 
 tf.config.optimizer.set_jit(True)
 
-GLOBAL_EPOCHS = 80
+GLOBAL_EPOCHS = 100
 
 def scheduler(epoch, lr):
-    lrmin = 0.00001
-    lrmax = 0.001
+    lrmin=0.00005
+    lrmax=0.00015
     step_size = 10
     max_iter = GLOBAL_EPOCHS
     delta = 10
@@ -40,7 +40,7 @@ dicts = list()
 histories = list()
 
 items = [10, 50, 250, 500]
-patiences = [10, 15, 5, 15]
+patiences = [25, 25, 25, 20]
 batch_sizes = [20, 32, 32, 32]
 for index, item in enumerate(items):
 
@@ -72,34 +72,18 @@ for index, item in enumerate(items):
 
     # Load updated weights from official repository
     transfer_learning_model = tf.keras.applications.EfficientNetB0(include_top=False, input_shape=(224, 224, 3), weights='efficientnet-b0/efficientnetb0_notop.h5')
-    for layer in transfer_learning_model.layers:
+    for layer in transfer_learning_model.layers[:-6]:
         layer.trainable = False
 
     model.add(transfer_learning_model)
     model.add(GlobalAveragePooling2D())
-    model.add(Dropout(0.25))
-    model.add(Dense(512))
-    model.add(Dropout(0.25))
     model.add(BatchNormalization())
-    model.add(Dense(512))
     model.add(Dropout(0.25))
-    model.add(BatchNormalization())
-    model.add(Dense(512))
-    model.add(Dropout(0.25))
-    model.add(BatchNormalization())
-    model.add(Dense(512))
-    model.add(Dropout(0.25))
-    model.add(Dense(256))
-    model.add(Dropout(0.25))
-    model.add(BatchNormalization())
-    model.add(Dense(256))
-    model.add(Dropout(0.25))
-    model.add(Dense(256))
     model.add(Dense(num_classes, activation='softmax'))
     
     model.compile(loss=CosineSimilarity(axis=1), optimizer=Adam(), metrics=[CategoricalAccuracy()])
 
-    datagen = ImageDataGenerator(rotation_range=45, zoom_range=[0.85,1.0], horizontal_flip=True, fill_mode='reflect')
+    datagen = ImageDataGenerator(rotation_range=45, zoom_range=[0.85,1.0], width_shift_range=0.1, height_shift_range=0.1, horizontal_flip=True, fill_mode='nearest')
 
     if VERBOSE: model.summary()
 
@@ -111,7 +95,7 @@ for index, item in enumerate(items):
                         batch_size=batch_sizes[index], 
                         verbose=VERBOSE, 
                         callbacks=[earlyStop, LearningRateScheduler(scheduler)], 
-                        validation_batch_size=2000)
+                        validation_batch_size=2500)
     histories.append(history)
 
     model.save(f"models/combinedda-{item}.h5")

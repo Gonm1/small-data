@@ -19,7 +19,7 @@ from utils import make_graphs, print_to_file
 GLOBAL_EPOCHS = 350
 
 def scheduler(epoch, lr):
-    lrmin=0.00001
+    lrmin=0.0005
     lrmax=0.001
     step_size = 10
     max_iter = GLOBAL_EPOCHS
@@ -37,7 +37,7 @@ dicts = list()
 histories = list()
 
 items = [10, 50, 250, 500]
-patiences = [75, 60, 50, 40]
+patiences = [90, 35, 30, 20]
 batch_sizes = [20, 32, 32, 32]
 for index, item in enumerate(items):
 
@@ -66,24 +66,17 @@ for index, item in enumerate(items):
     model.add(BatchNormalization())
     model.add(MaxPooling2D(pool_size=(4, 4)))
     model.add(Conv2D(filters=128, kernel_size=(7, 7), activation='relu', padding='same', dilation_rate=2))
-    model.add(BatchNormalization())
     model.add(Conv2D(filters=64, kernel_size=(7, 7), activation='relu', padding='same', dilation_rate=2))
-    model.add(BatchNormalization())
     model.add(Conv2D(filters=64, kernel_size=(7, 7), activation='relu', padding='same', dilation_rate=1))
     model.add(GlobalAveragePooling2D())
-    model.add(Dense(64, activation='relu'))
-    model.add(Dropout(0.5))
-    model.add(Dense(64, activation='relu'))
-    model.add(Dropout(0.5))
-    model.add(Dense(64, activation='relu'))
-    model.add(Dropout(0.5))
+    model.add(Dropout(0.2))
     model.add(Dense(num_classes, activation='softmax'))
 
     model.compile(loss=CosineSimilarity(axis=1), optimizer=Adam(learning_rate=learning_rate), metrics=[CategoricalAccuracy()])
 
     if VERBOSE: model.summary()
     earlyStop = EarlyStopping(monitor='val_loss', mode='min', patience=patience, verbose=VERBOSE)
-    history = model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=epochs, batch_size=batch_sizes[index], verbose=VERBOSE, callbacks=[earlyStop, LearningRateScheduler(scheduler)], validation_batch_size=2000)
+    history = model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=epochs, batch_size=batch_sizes[index], verbose=VERBOSE, callbacks=[earlyStop, LearningRateScheduler(scheduler)], validation_batch_size=2500)
     histories.append(history)
     model.save(f"models/combined-{item}.h5")
 
