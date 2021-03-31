@@ -22,15 +22,15 @@ Combinedda = [[79.6, 93, 96.7, 98.1], [81.1,	93,	96.7,	98.1], [79.1,	92.9,	96.7,
 Ensemble = [[86.8, 96, 98.6, 99], [87.5,	96,	98.6,	99], [86.3,	95.9,	98.6,	99], [86.2,	95.9,	98.6,	99], [85.4,	95.5,	98.5,	98.9]]
 
 all_data = [dt, rf, SVM, DNN, Dropout, GAP, BNORM, CosineLoss, DilatedConv, CLR, Combined, Combinedda, Ensemble]
-names = ['Árbol de decisión', 'Bosque aleatorio', 'Máquina de soporte de vectores', 'Red neuronal Profunda',
-         'Dropout', 'Agrupación Promedio Global', 'Normalización por lotes', 'Similitud de coseno', 'Convolución dilatada',
-         'Decadencia cíclica de tasa de aprendizaje', 'Combinación', 'Combinación con transferencia de aprendizaje', 'Ensamblaje']
+names = ['Árbol de decisión', 'Bosque aleatorio', 'Máquina de soporte de vectores', 'Red neuronal profunda',
+         'Dropout', 'Agrupación de promedio global', 'Normalización por lotes', 'Similitud de coseno', 'Convolución dilatada',
+         'Decadencia cíclica de tasa de aprendizaje', 'Combinación de técnicas (C1)', 'Combinación de técnicas (C2)', 'Ensamblaje de múltiples modelos']
 
 colors = ['#e6194B', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#42d4f4', '#f032e6', '#fabed4', '#469990', '#dcbeff', '#9A6324',  '#800000', '#000075']
 samples = [0, 15, 30, 45]
 
 # Grafico de exactitud
-pyplot.rcParams.update({'font.size': 14})
+pyplot.rcParams.update({'font.size': 15})
 
 fig, ax = pyplot.subplots(figsize=(15,10))
 ax.set(title='Exactitud en MNIST', xlabel='Ejemplos por clase', ylabel='Exactitud')
