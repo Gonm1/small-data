@@ -22,11 +22,11 @@ Combinedda = [[65.5,	78.4,	83.4,	84.3], [68.3,	80.3,	84.3,	85.4], [65.5,	78.4,	8
 Ensemble = [[70.2,	81.9,	87.4,	89], [69.9,	81.4,	87.4,	89], [70.2,	81.9,	87.4,	89], [69.5,	81.5,	87.4,	89], [67,	79.9,	86,	87.8]]
 
 all_data = [dt, rf, SVM, DNN, Dropout, GAP, BNORM, CosineLoss, DilatedConv, CLR, Combined, Combinedda, Ensemble]
-names = ['Árbol de decisión', 'Bosque aleatorio', 'Máquina de soporte de vectores', 'Red neuronal profunda',
-         'Dropout', 'Agrupación de promedio global', 'Normalización por lotes', 'Similitud de coseno', 'Convolución dilatada',
-         'Decadencia cíclica de tasa de aprendizaje', 'Combinación de técnicas (C1)', 'Combinación de técnicas (C2)', 'Ensamblaje de múltiples modelos']
+#names = ['Árbol de decisión', 'Bosque aleatorio', 'Máquina de soporte de vectores', 'Red neuronal profunda',
+  #       'Dropout', 'Agrupación de promedio global', 'Normalización por lotes', 'Similitud de coseno', 'Convolución dilatada',
+   #      'Decadencia cíclica de tasa de aprendizaje', 'Combinación de técnicas (C1)', 'Combinación de técnicas (C2)', 'Ensamblaje de múltiples modelos']
 
-
+names = ['Decision tree', 'Random forest', 'Support vector machine', 'Deep neural network', 'Dropout', 'Global average pooling', 'Batch Normalization', 'Cosine similarity', 'Dilated convolution', 'Cyclic learning rate decay', 'Combination of techniques (C1)', 'Combination of techniques (C2)', 'Multi-model ensemble']
 
 colors = ['#e6194B', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#42d4f4', '#f032e6', '#fabed4', '#469990', '#dcbeff', '#9A6324',  '#800000', '#000075']
 samples = [0, 15, 30, 45]
@@ -34,64 +34,64 @@ samples = [0, 15, 30, 45]
 pyplot.rcParams.update({'font.size': 15})
 
 fig, ax = pyplot.subplots(figsize=(15,10))
-ax.set(title='Exactitud en Fashion MNIST', xlabel='Ejemplos por clase', ylabel='Exactitud')
+ax.set(title='Accuracy for Fashion MNIST', xlabel='Examples per class', ylabel='Accuracy')
 for index, data in enumerate(all_data):
     ax.bar([x+index for x in samples], [x/100 for x in data[exactitud]], label=names[index], color=colors[index])
 pyplot.grid(axis='y')
 pyplot.ylim([0.45, 0.90])
 pyplot.yticks(np.arange(0.45, 0.95, step=0.05))
 pyplot.xticks([6.5, 21.5, 36.5, 51.5], ['10', '50', '250', '500'])
-pyplot.legend(bbox_to_anchor=(0.5, -0.4), loc='lower center', ncol=2)
-pyplot.savefig('results/fmnist-exactitud.pdf', bbox_inches = 'tight')
+#pyplot.legend(bbox_to_anchor=(0.5, -0.3), loc='lower center', ncol=3)
+pyplot.savefig('results/english-fmnist-exactitud.pdf', bbox_inches = 'tight')
 
 
 
 fig, ax = pyplot.subplots(figsize=(15,10))
-ax.set(title='Precisión en Fashion MNIST', xlabel='Ejemplos por clase', ylabel='Precisión')
+ax.set(title='Precision for Fashion MNIST', xlabel='Examples per class', ylabel='Precision')
 for index, data in enumerate(all_data):
     ax.bar([x+index for x in samples], [x/100 for x in data[precision]], label=names[index], color=colors[index])
 pyplot.grid(axis='y')
 pyplot.ylim([0.45, 0.90])
 pyplot.yticks(np.arange(0.45, 0.95, step=0.05))
 pyplot.xticks([6.5, 21.5, 36.5, 51.5], ['10', '50', '250', '500'])
-pyplot.legend(bbox_to_anchor=(0.5, -0.4), loc='lower center', ncol=2)
-pyplot.savefig('results/fmnist-precision.pdf', bbox_inches = 'tight')
+#pyplot.legend(bbox_to_anchor=(0.5, -0.3), loc='lower center', ncol=3)
+pyplot.savefig('results/english-fmnist-precision.pdf', bbox_inches = 'tight')
 
 
 
 fig, ax = pyplot.subplots(figsize=(15,10))
-ax.set(title='Recall en Fashion MNIST', xlabel='Ejemplos por clase', ylabel='Recall')
+ax.set(title='Recall for Fashion MNIST', xlabel='Examples per class', ylabel='Recall')
 for index, data in enumerate(all_data):
     ax.bar([x+index for x in samples], [x/100 for x in data[recall]], label=names[index], color=colors[index])
 pyplot.grid(axis='y')
 pyplot.ylim([0.45, 0.90])
 pyplot.yticks(np.arange(0.45, 0.95, step=0.05))
 pyplot.xticks([6.5, 21.5, 36.5, 51.5], ['10', '50', '250', '500'])
-pyplot.legend(bbox_to_anchor=(0.5, -0.4), loc='lower center', ncol=2)
-pyplot.savefig('results/fmnist-recall.pdf', bbox_inches = 'tight')
+#pyplot.legend(bbox_to_anchor=(0.5, -0.3), loc='lower center', ncol=3)
+pyplot.savefig('results/english-fmnist-recall.pdf', bbox_inches = 'tight')
 
 
 
 fig, ax = pyplot.subplots(figsize=(15,10))
-ax.set(title='F1 en Fashion MNIST', xlabel='Ejemplos por clase', ylabel='F1')
+ax.set(title='F1 for Fashion MNIST', xlabel='Examples per class', ylabel='F1')
 for index, data in enumerate(all_data):
     ax.bar([x+index for x in samples], [x/100 for x in data[f1]], label=names[index], color=colors[index])
 pyplot.grid(axis='y')
 pyplot.ylim([0.45, 0.90])
 pyplot.yticks(np.arange(0.45, 0.95, step=0.05))
 pyplot.xticks([6.5, 21.5, 36.5, 51.5], ['10', '50', '250', '500'])
-pyplot.legend(bbox_to_anchor=(0.5, -0.4), loc='lower center', ncol=2)
-pyplot.savefig('results/fmnist-f1.pdf', bbox_inches = 'tight')
+#pyplot.legend(bbox_to_anchor=(0.5, -0.3), loc='lower center', ncol=3)
+pyplot.savefig('results/english-fmnist-f1.pdf', bbox_inches = 'tight')
 
 
 
 fig, ax = pyplot.subplots(figsize=(15,10))
-ax.set(title='Coeficiente de Correlacion de Matthews en Fashion MNIST', xlabel='Ejemplos por clase', ylabel='MCC')
+ax.set(title='Matthews Correlation Coefficient for Fashion MNIST', xlabel='Examples per class', ylabel='MCC')
 for index, data in enumerate(all_data):
     ax.bar([x+index for x in samples], [x/100 for x in data[mcc]], label=names[index], color=colors[index])
 pyplot.grid(axis='y')
 pyplot.ylim([0.40, 0.90])
 pyplot.yticks(np.arange(0.40, 0.95, step=0.05))
 pyplot.xticks([6.5, 21.5, 36.5, 51.5], ['10', '50', '250', '500'])
-pyplot.legend(bbox_to_anchor=(0.5, -0.4), loc='lower center', ncol=2)
-pyplot.savefig('results/fmnist-mcc.pdf', bbox_inches = 'tight')
+pyplot.legend(bbox_to_anchor=(0.5, -0.3), loc='lower center', ncol=3)
+pyplot.savefig('results/english-fmnist-mcc.pdf', bbox_inches = 'tight')

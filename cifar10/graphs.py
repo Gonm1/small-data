@@ -22,9 +22,11 @@ Combinedda = [[37.8,	58.4,	72.4,	76.2], [39,	61.7,	72.8,	76.8], [37.8,	58.4,	72.
 Ensemble = [[31.9,	43,	56,	64.2], [31.5,	43.2,	55.8,	63.7], [31.9,	43,	56.7,	64.2], [31,	42.6,	56,	63.9], [24.5,	36.8,	51.9,	60.3,]]
 
 all_data = [dt, rf, SVM, DNN, Dropout, GAP, BNORM, CosineLoss, DilatedConv, CLR, Combined, Combinedda, Ensemble]
-names = ['Árbol de decisión', 'Bosque aleatorio', 'Máquina de soporte de vectores', 'Red neuronal profunda',
-         'Dropout', 'Agrupación de promedio global', 'Normalización por lotes', 'Similitud de coseno', 'Convolución dilatada',
-         'Decadencia cíclica de tasa de aprendizaje', 'Combinación de técnicas (C1)', 'Combinación de técnicas (C2)', 'Ensamblaje de múltiples modelos']
+#names = ['Árbol de decisión', 'Bosque aleatorio', 'Máquina de soporte de vectores', 'Red neuronal profunda',
+         #'Dropout', 'Agrupación de promedio global', 'Normalización por lotes', 'Similitud de coseno', 'Convolución dilatada',
+         #'Decadencia cíclica de tasa de aprendizaje', 'Combinación de técnicas (C1)', 'Combinación de técnicas (C2)', 'Ensamblaje de múltiples modelos']
+
+names = ['Decision tree', 'Random forest', 'Support vector machine', 'Deep neural network', 'Dropout', 'Global average pooling', 'Batch Normalization', 'Cosine similarity', 'Dilated convolution', 'Cyclic learning rate decay', 'Combination of techniques (C1)', 'Combination of techniques (C2)', 'Multi-model ensemble']
 
 colors = ['#e6194B', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#42d4f4', '#f032e6', '#fabed4', '#469990', '#dcbeff', '#9A6324',  '#800000', '#000075']
 samples = [0, 15, 30, 45]
@@ -33,60 +35,60 @@ samples = [0, 15, 30, 45]
 pyplot.rcParams.update({'font.size': 15})
 
 fig, ax = pyplot.subplots(figsize=(15,10))
-ax.set(title='Exactitud en CIFAR-10', xlabel='Ejemplos por clase', ylabel='Exactitud')
+ax.set(title='Accuracy for CIFAR-10', xlabel='Examples per class', ylabel='Accuracy')
 for index, data in enumerate(all_data):
     ax.bar([x+index for x in samples], [ x/100 for x in data[exactitud]], label=names[index], color=colors[index])
 pyplot.grid(axis='y')
 pyplot.ylim([0.15, 0.80])
 pyplot.yticks(np.arange(0.15, 0.85, step=0.05))
 pyplot.xticks([6.5, 21.5, 36.5, 51.5], ['10', '50', '250', '500'])
-pyplot.legend(bbox_to_anchor=(0.5, -0.4), loc='lower center', ncol=2)
-pyplot.savefig('results/cifar-exactitud.pdf', bbox_inches = 'tight')
+#pyplot.legend(bbox_to_anchor=(0.5, -0.3), loc='lower center', ncol=3)
+pyplot.savefig('results/english-cifar-exactitud.pdf', bbox_inches = 'tight')
 
 # Grafico de precision
 fig, ax = pyplot.subplots(figsize=(15,10))
-ax.set(title='Precisión en CIFAR-10', xlabel='Ejemplos por clase', ylabel='Precisión')
+ax.set(title='Precision for CIFAR-10', xlabel='Examples per class', ylabel='Precision')
 for index, data in enumerate(all_data):
     ax.bar([x+index for x in samples], [ x/100 for x in data[precision]], label=names[index], color=colors[index])
 pyplot.grid(axis='y')
 pyplot.ylim([0.15, 0.80])
 pyplot.yticks(np.arange(0.15, 0.85, step=0.05))
 pyplot.xticks([6.5, 21.5, 36.5, 51.5], ['10', '50', '250', '500'])
-pyplot.legend(bbox_to_anchor=(0.5, -0.4), loc='lower center', ncol=2)
-pyplot.savefig('results/cifar-precision.pdf', bbox_inches = 'tight')
+#pyplot.legend(bbox_to_anchor=(0.5, -0.3), loc='lower center', ncol=3)
+pyplot.savefig('results/english-cifar-precision.pdf', bbox_inches = 'tight')
 
 # Grafico de recall
 fig, ax = pyplot.subplots(figsize=(15,10))
-ax.set(title='Recall en CIFAR-10', xlabel='Ejemplos por clase', ylabel='Recall')
+ax.set(title='Recall for CIFAR-10', xlabel='Examples per class', ylabel='Recall')
 for index, data in enumerate(all_data):
     ax.bar([x+index for x in samples], [ x/100 for x in data[recall]], label=names[index], color=colors[index])
 pyplot.grid(axis='y')
 pyplot.ylim([0.15, 0.80])
 pyplot.yticks(np.arange(0.15, 0.85, step=0.05))
 pyplot.xticks([6.5, 21.5, 36.5, 51.5], ['10', '50', '250', '500'])
-pyplot.legend(bbox_to_anchor=(0.5, -0.4), loc='lower center', ncol=2)
-pyplot.savefig('results/cifar-recall.pdf', bbox_inches = 'tight')
+#pyplot.legend(bbox_to_anchor=(0.5, -0.3), loc='lower center', ncol=3)
+pyplot.savefig('results/english-cifar-recall.pdf', bbox_inches = 'tight')
 
 # Grafico de f1
 fig, ax = pyplot.subplots(figsize=(15,10))
-ax.set(title='F1 en CIFAR-10', xlabel='Ejemplos por clase', ylabel='F1')
+ax.set(title='F1 for CIFAR-10', xlabel='Examples per class', ylabel='F1')
 for index, data in enumerate(all_data):
     ax.bar([x+index for x in samples], [ x/100 for x in data[f1]], label=names[index], color=colors[index])
 pyplot.grid(axis='y')
 pyplot.ylim([0.15, 0.80])
 pyplot.yticks(np.arange(0.15, 0.85, step=0.05))
 pyplot.xticks([6.5, 21.5, 36.5, 51.5], ['10', '50', '250', '500'])
-pyplot.legend(bbox_to_anchor=(0.5, -0.4), loc='lower center', ncol=2)
-pyplot.savefig('results/cifar-f1.pdf', bbox_inches = 'tight')
+#pyplot.legend(bbox_to_anchor=(0.5, -0.3), loc='lower center', ncol=3)
+pyplot.savefig('results/english-cifar-f1.pdf', bbox_inches = 'tight')
 
 # Grafico de mcc
 fig, ax = pyplot.subplots(figsize=(15,10))
-ax.set(title='Coeficiente de Correlacion de Matthews en CIFAR-10', xlabel='Ejemplos por clase', ylabel='MCC')
+ax.set(title='Matthews Correlation Coefficient for CIFAR-10', xlabel='Examples per class', ylabel='MCC')
 for index, data in enumerate(all_data):
     ax.bar([x+index for x in samples], [ x/100 for x in data[mcc]], label=names[index], color=colors[index])
 pyplot.grid(axis='y')
 pyplot.ylim([0.05, 0.75])
 pyplot.yticks(np.arange(0.05, 0.80, step=0.05))
 pyplot.xticks([6.5, 21.5, 36.5, 51.5], ['10', '50', '250', '500'])
-pyplot.legend(bbox_to_anchor=(0.5, -0.4), loc='lower center', ncol=2)
-pyplot.savefig('results/cifar-mcc.pdf', bbox_inches = 'tight')
+pyplot.legend(bbox_to_anchor=(0.5, -0.3), loc='lower center', ncol=3)
+pyplot.savefig('results/english-cifar-mcc.pdf', bbox_inches = 'tight')

@@ -22,9 +22,11 @@ Combinedda = [[79.6, 93, 96.7, 98.1], [81.1,	93,	96.7,	98.1], [79.1,	92.9,	96.7,
 Ensemble = [[86.8, 96, 98.6, 99], [87.5,	96,	98.6,	99], [86.3,	95.9,	98.6,	99], [86.2,	95.9,	98.6,	99], [85.4,	95.5,	98.5,	98.9]]
 
 all_data = [dt, rf, SVM, DNN, Dropout, GAP, BNORM, CosineLoss, DilatedConv, CLR, Combined, Combinedda, Ensemble]
-names = ['Árbol de decisión', 'Bosque aleatorio', 'Máquina de soporte de vectores', 'Red neuronal profunda',
-         'Dropout', 'Agrupación de promedio global', 'Normalización por lotes', 'Similitud de coseno', 'Convolución dilatada',
-         'Decadencia cíclica de tasa de aprendizaje', 'Combinación de técnicas (C1)', 'Combinación de técnicas (C2)', 'Ensamblaje de múltiples modelos']
+#names = ['Árbol de decisión', 'Bosque aleatorio', 'Máquina de soporte de vectores', 'Red neuronal profunda',
+ #        'Dropout', 'Agrupación de promedio global', 'Normalización por lotes', 'Similitud de coseno', 'Convolución dilatada',
+  #       'Decadencia cíclica de tasa de aprendizaje', 'Combinación de técnicas (C1)', 'Combinación de técnicas (C2)', 'Ensamblaje de múltiples modelos']
+
+names = ['Decision tree', 'Random forest', 'Support vector machine', 'Deep neural network', 'Dropout', 'Global average pooling', 'Batch Normalization', 'Cosine similarity', 'Dilated convolution', 'Cyclic learning rate decay', 'Combination of techniques (C1)', 'Combination of techniques (C2)', 'Multi-model ensemble']
 
 colors = ['#e6194B', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#42d4f4', '#f032e6', '#fabed4', '#469990', '#dcbeff', '#9A6324',  '#800000', '#000075']
 samples = [0, 15, 30, 45]
@@ -33,60 +35,60 @@ samples = [0, 15, 30, 45]
 pyplot.rcParams.update({'font.size': 15})
 
 fig, ax = pyplot.subplots(figsize=(15,10))
-ax.set(title='Exactitud en MNIST', xlabel='Ejemplos por clase', ylabel='Exactitud')
+ax.set(title='Accuracy for MNIST', xlabel='Examples per class', ylabel='Accuracy')
 for index, data in enumerate(all_data):
     ax.bar([x+index for x in samples], [x/100 for x in data[exactitud]], label=names[index], color=colors[index])
 pyplot.grid(axis='y')
 pyplot.ylim([0.40, 1])
 pyplot.yticks(np.arange(0.40, 1.05, step=0.05))
 pyplot.xticks([6.5, 21.5, 36.5, 51.5], ['10', '50', '250', '500'])
-pyplot.legend(bbox_to_anchor=(0.5, -0.4), loc='lower center', ncol=2)
-pyplot.savefig('results/mnist-exactitud.pdf', bbox_inches = 'tight')
+#pyplot.legend(bbox_to_anchor=(0.5, -0.3), loc='lower center', ncol=3)
+pyplot.savefig('results/english-mnist-exactitud.pdf', bbox_inches = 'tight')
 
 # Grafico de precision
 fig, ax = pyplot.subplots(figsize=(15,10))
-ax.set(title='Precisión en MNIST', xlabel='Ejemplos por clase', ylabel='Precisión')
+ax.set(title='Precision for MNIST', xlabel='Examples per class', ylabel='Precision')
 for index, data in enumerate(all_data):
     ax.bar([x+index for x in samples], [x/100 for x in data[precision]], label=names[index], color=colors[index])
 pyplot.grid(axis='y')
 pyplot.ylim([0.40, 1])
 pyplot.yticks(np.arange(0.40, 1.05, step=0.05))
 pyplot.xticks([6.5, 21.5, 36.5, 51.5], ['10', '50', '250', '500'])
-pyplot.legend(bbox_to_anchor=(0.5, -0.4), loc='lower center', ncol=2)
-pyplot.savefig('results/mnist-precision.pdf', bbox_inches = 'tight')
+#pyplot.legend(bbox_to_anchor=(0.5, -0.3), loc='lower center', ncol=3)
+pyplot.savefig('results/english-mnist-precision.pdf', bbox_inches = 'tight')
 
 # Grafico de recall
 fig, ax = pyplot.subplots(figsize=(15,10))
-ax.set(title='Recall en MNIST', xlabel='Ejemplos por clase', ylabel='Recall')
+ax.set(title='Recall for MNIST', xlabel='Examples per class', ylabel='Recall')
 for index, data in enumerate(all_data):
     ax.bar([x+index for x in samples], [x/100 for x in data[recall]], label=names[index], color=colors[index])
 pyplot.grid(axis='y')
 pyplot.ylim([0.40, 1])
 pyplot.yticks(np.arange(0.40, 1.05, step=0.05))
 pyplot.xticks([6.5, 21.5, 36.5, 51.5], ['10', '50', '250', '500'])
-pyplot.legend(bbox_to_anchor=(0.5, -0.4), loc='lower center', ncol=2)
-pyplot.savefig('results/mnist-recall.pdf', bbox_inches = 'tight')
+#pyplot.legend(bbox_to_anchor=(0.5, -0.3), loc='lower center', ncol=3)
+pyplot.savefig('results/english-mnist-recall.pdf', bbox_inches = 'tight')
 
 # Grafico de f1
 fig, ax = pyplot.subplots(figsize=(15,10))
-ax.set(title='F1 en MNIST', xlabel='Ejemplos por clase', ylabel='F1')
+ax.set(title='F1 for MNIST', xlabel='Examples per class', ylabel='F1')
 for index, data in enumerate(all_data):
     ax.bar([x+index for x in samples], [x/100 for x in data[f1]], label=names[index], color=colors[index])
 pyplot.grid(axis='y')
 pyplot.ylim([0.40, 1])
 pyplot.yticks(np.arange(0.40, 1.05, step=0.05))
 pyplot.xticks([6.5, 21.5, 36.5, 51.5], ['10', '50', '250', '500'])
-pyplot.legend(bbox_to_anchor=(0.5, -0.4), loc='lower center', ncol=2)
-pyplot.savefig('results/mnist-f1.pdf', bbox_inches = 'tight')
+#pyplot.legend(bbox_to_anchor=(0.5, -0.3), loc='lower center', ncol=3)
+pyplot.savefig('results/english-mnist-f1.pdf', bbox_inches = 'tight')
 
 # Grafico de mcc
 fig, ax = pyplot.subplots(figsize=(15,10))
-ax.set(title='Coeficiente de Correlacion de Matthews en MNIST', xlabel='Ejemplos por clase', ylabel='MCC')
+ax.set(title='Matthews Correlation Coefficient for MNIST', xlabel='Examples per class', ylabel='MCC')
 for index, data in enumerate(all_data):
     ax.bar([x+index for x in samples], [x/100 for x in data[mcc]], label=names[index], color=colors[index])
 pyplot.grid(axis='y')
 pyplot.ylim([0.35, 1])
 pyplot.yticks(np.arange(0.35, 1.05, step=0.05))
 pyplot.xticks([6.5, 21.5, 36.5, 51.5], ['10', '50', '250', '500'])
-pyplot.legend(bbox_to_anchor=(0.5, -0.4), loc='lower center', ncol=2)
-pyplot.savefig('results/mnist-mcc.pdf', bbox_inches = 'tight')
+pyplot.legend(bbox_to_anchor=(0.5, -0.3), loc='lower center', ncol=3)
+pyplot.savefig('results/english-mnist-mcc.pdf', bbox_inches = 'tight')
